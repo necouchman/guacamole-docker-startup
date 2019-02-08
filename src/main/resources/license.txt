@@ -16,29 +16,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.guacamole.auth.docker.connection;
-
-import com.google.inject.Inject;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
-
-/**
- * A directory containing a single connection that is started in a Docker
- * container.
- */
-public class DockerStartupConnectionDirectory extends SimpleDirectory<Connection> {
-    
-    /**
-     * The configuration service for this module.
-     */
-    @Inject
-    private ConfigurationService confService;
-    
-    public DockerStartupConnectionDirectory() throws GuacamoleException {
-        
-    }
-    
-}

@@ -28,8 +28,7 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- *
- * @author nick_couchman
+ * A Guacamole property that represents a list of ports seprated by commas.
  */
 public abstract class PortListProperty implements GuacamoleProperty<List<Integer>> {
     

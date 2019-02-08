@@ -22,9 +22,9 @@ package org.apache.guacamole.auth.docker;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -33,7 +33,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * does not do any authentication, it only provides a connection directory
  * containing the started docker container.
  */
-public class DockerStartupAuthenticationProvider extends AbstractAuthenticationProvider {
+public class DockerStartupProvider extends AbstractAuthenticationProvider {
     
     /**
      * Guice object used for managing dependency injection.
@@ -47,8 +47,8 @@ public class DockerStartupAuthenticationProvider extends AbstractAuthenticationP
      *     If an error occurs parsing guacamole.properties while standing
      *     up the environment.
      */
-    public DockerStartupAuthenticationProvider() throws GuacamoleException {
-        this.injector = Guice.createInjector(new DockerStartupAuthenticationProviderModule(this));
+    public DockerStartupProvider() throws GuacamoleException {
+        this.injector = Guice.createInjector(new DockerStartupProviderModule(this));
     }
     
     @Override
@@ -57,8 +57,25 @@ public class DockerStartupAuthenticationProvider extends AbstractAuthenticationP
     }
     
     @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser) {
-        return new DockerStartupUserContext(this, authenticatedUser.getIdentifier());
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        
+        DockerStartupService startupService = injector.getInstance(DockerStartupService.class);
+        
+        return startupService.decorate(context);
+
+    }
+    
+    @Override
+    public UserContext redecorate(UserContext decorated, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        DockerStartupService startupService = injector.getInstance(DockerStartupService.class);
+        
+        return startupService.decorate(context);
+        
     }
     
 }

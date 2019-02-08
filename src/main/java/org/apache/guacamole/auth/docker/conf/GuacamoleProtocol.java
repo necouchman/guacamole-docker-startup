@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.auth.docker.conf;
 
-import java.util.List;
-
 /**
  * An enum that represents the protocols currently supported by Guacamole,
  * and contains their default ports.
@@ -30,22 +28,22 @@ public enum GuacamoleProtocol {
     /**
      * Remote Desktop Protocol (RDP), with a default port of 3389.
      */
-    RDP(3389),
+    rdp(3389),
     
     /**
      * Secure Shell (SSH), with a default port of 22.
      */
-    SSH(22),
+    ssh(22),
     
     /**
      * Telnet, with a default port of 23.
      */
-    Telnet(23),
+    telnet(23),
     
     /**
      * Virtual Network Computing (VNC), with a default port of 5901.
      */
-    VNC(5901);
+    vnc(5901);
     
     /**
      * The default TCP port to use to connect.

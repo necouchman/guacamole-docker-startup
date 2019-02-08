@@ -5,10 +5,10 @@
     
     "CONNECTION_ATTRIBUTES" : {
         "FIELD_HEADER_DOCKER_IMAGE_CMD"      : "Image command",
+        "FIELD_HEADER_DOCKER_IMAGE_ENV"      : "Image environment",
         "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
         "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",
-        "FIELD_HEADER_DOCKER_IMAGE_PROTOCOL" : "Image protocol",
         
-        "SECTION_HEADER_DOCKER_STARTUP_ATTRIBUTES" : "Docker Startup Attributes"
+        "SECTION_HEADER_DOCKER_IMAGE" : "Docker Image Attributes"
     }
 }

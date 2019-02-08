@@ -19,33 +19,31 @@
 
 package org.apache.guacamole.auth.docker.user;
 
-import com.google.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.auth.docker.DockerStartupAuthenticationProvider;
-import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
-import org.apache.guacamole.net.auth.AbstractUserContext;
+import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
+import org.apache.guacamole.docker.DockerStartupClient;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.DecoratingDirectory;
+import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
-import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.Permissions;
+import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleUser;
+import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
  * A UserContext that delegates authentication and storage of user attributes
  * to another module, and provides for handling startup of and connection to
  * a Docker container.
  */
-public class DockerStartupUserContext extends AbstractUserContext {
-    
-    /**
-     * The configuration service for this module.
-     */
-    @Inject
-    private ConfigurationService confService;
+public class DockerStartupUserContext extends DelegatingUserContext {
     
     /**
      * The authentication provider associated with this user context.
@@ -53,14 +51,36 @@ public class DockerStartupUserContext extends AbstractUserContext {
     private final AuthenticationProvider authProvider;
     
     /**
-     * The username used to log in to Guacamole.
+     * The Docker client used to manage containers.
      */
-    private final String username;
+    private final DockerStartupClient dockerClient;
     
-    public DockerStartupUserContext(AuthenticationProvider authProvider,
-            String username) {
+    /**
+     * Initialize a new DockerStartupUserContext, decorating the provided
+     * userContext object, and using the provided DockerStartupClient to
+     * perform Docker-related operations.
+     * 
+     * @param userContext
+     *     The UserContext to decorate.
+     * 
+     * @param dockerClient
+     *     The DockerStartupClient to use to perform Docker-related operations.
+     * 
+     * @param authProvider
+     *     The authentication provider calling this user context.
+     * 
+     * @throws GuacamoleException
+     *     If errors occur using the DockerStartupClient or initializing
+     *     the various directories.
+     */
+    public DockerStartupUserContext(UserContext userContext,
+            DockerStartupClient dockerClient,
+            AuthenticationProvider authProvider) throws GuacamoleException {
+        
+        super(userContext);
+        this.dockerClient = dockerClient;
         this.authProvider = authProvider;
-        this.username = username;
+        
     }
     
     @Override
@@ -69,32 +89,35 @@ public class DockerStartupUserContext extends AbstractUserContext {
     }
     
     @Override
-    public User self() {
-                return new SimpleUser(username) {
-
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+        return new DecoratingDirectory<Connection>(super.getConnectionDirectory()) {
+            
             @Override
-            public ObjectPermissionSet getConnectionGroupPermissions()
-                    throws GuacamoleException {
-                return new SimpleObjectPermissionSet(
-                        getConnectionDirectory().getIdentifiers());
+            public Connection decorate(Connection object) throws GuacamoleException {
+                Permissions effective = self().getEffectivePermissions();
+                SystemPermissionSet system = effective.getSystemPermissions();
+                ObjectPermissionSet objperms = effective.getConnectionPermissions();
+                Boolean canUpdate = false;
+                if (system.hasPermission(SystemPermission.Type.ADMINISTER)
+                        || objperms.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
+                    canUpdate = true;
+                return new DockerStartupConnection(object, dockerClient, self().getIdentifier(), canUpdate);
             }
-
+            
             @Override
-            public ObjectPermissionSet getConnectionPermissions()
-                    throws GuacamoleException {
-                return new SimpleObjectPermissionSet(
-                        getConnectionGroupDirectory().getIdentifiers());
+            public Connection undecorate(Connection object) {
+                assert (object instanceof DockerStartupConnection);
+                return ((DockerStartupConnection) object).getUndecorated();
             }
-
+            
         };
     }
-
+    
     @Override
-    public Directory<Connection> getConnectionDirectory() 
-            throws GuacamoleException {
-
-        return new DockerStartupConnectionDirectory();
-        
+    public Collection<Form> getConnectionAttributes() {
+        Collection<Form> allAttributes = new HashSet<>(super.getConnectionAttributes());
+        allAttributes.addAll(DockerStartupConnection.ATTRIBUTES);
+        return Collections.unmodifiableCollection(allAttributes);
     }
     
 }

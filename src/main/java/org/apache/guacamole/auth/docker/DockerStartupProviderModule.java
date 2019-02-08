@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.docker;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -31,7 +30,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
  * A module that handles injection of various classes in the Docker Startup
  * Authentication provider.
  */
-public class DockerStartupAuthenticationProviderModule extends AbstractModule {
+public class DockerStartupProviderModule extends AbstractModule {
     
     /**
      * The environment of the Guacamole server.
@@ -53,7 +52,7 @@ public class DockerStartupAuthenticationProviderModule extends AbstractModule {
      * @throws GuacamoleException 
      *     If guacamole.properties cannot be parsed.
      */
-    public DockerStartupAuthenticationProviderModule(AuthenticationProvider authProvider)
+    public DockerStartupProviderModule(AuthenticationProvider authProvider)
         throws GuacamoleException {
         this.environment = new LocalEnvironment();
         this.authProvider = authProvider;
@@ -66,9 +65,9 @@ public class DockerStartupAuthenticationProviderModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
         
-        // Bind DockerStartup-specific classes.
+        // Bind extension-specific classes
         bind(ConfigurationService.class);
-        bind(DockerStartupConnectionDirectory.class);
+        
     }
     
 }

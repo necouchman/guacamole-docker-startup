@@ -5,7 +5,7 @@
     "namespace"        : "docker-startup",
 
     "authProviders"    : [
-        "com.example.guacamole.auth.docker.DockerStartupAuthenticationProvider"
+        "org.apache.guacamole.auth.docker.DockerStartupAuthenticationProvider"
     ],
     
     "translations" : [

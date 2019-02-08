@@ -1,0 +1,15 @@
+{
+    "guacamoleVersion" : "1.0.0",
+
+    "name"             : "Guacamole Docker Startup Extension",
+    "namespace"        : "docker-startup",
+
+    "authProviders"    : [
+        "com.example.guacamole.auth.docker.DockerStartupAuthenticationProvider"
+    ],
+    
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}

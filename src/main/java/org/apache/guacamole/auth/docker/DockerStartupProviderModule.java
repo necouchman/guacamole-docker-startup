@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
  * A module that handles injection of various classes in the Docker Startup
  * Authentication provider.
  */
-public class DockerStartupAuthenticationProviderModule extends AbstractModule {
+public class DockerStartupProviderModule extends AbstractModule {
     
     /**
      * The environment of the Guacamole server.
@@ -53,7 +53,7 @@ public class DockerStartupAuthenticationProviderModule extends AbstractModule {
      * @throws GuacamoleException 
      *     If guacamole.properties cannot be parsed.
      */
-    public DockerStartupAuthenticationProviderModule(AuthenticationProvider authProvider)
+    public DockerStartupProviderModule(AuthenticationProvider authProvider)
         throws GuacamoleException {
         this.environment = new LocalEnvironment();
         this.authProvider = authProvider;
@@ -68,7 +68,6 @@ public class DockerStartupAuthenticationProviderModule extends AbstractModule {
         
         // Bind DockerStartup-specific classes.
         bind(ConfigurationService.class);
-        bind(DockerStartupConnectionDirectory.class);
     }
     
 }

@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.docker.user;
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.auth.docker.DockerStartupAuthenticationProvider;
+import org.apache.guacamole.auth.docker.DockerStartupProvider;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
 import org.apache.guacamole.net.auth.AbstractUserContext;

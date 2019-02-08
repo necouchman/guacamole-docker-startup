@@ -33,7 +33,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * does not do any authentication, it only provides a connection directory
  * containing the started docker container.
  */
-public class DockerStartupAuthenticationProvider extends AbstractAuthenticationProvider {
+public class DockerStartupProvider extends AbstractAuthenticationProvider {
     
     /**
      * Guice object used for managing dependency injection.
@@ -47,8 +47,8 @@ public class DockerStartupAuthenticationProvider extends AbstractAuthenticationP
      *     If an error occurs parsing guacamole.properties while standing
      *     up the environment.
      */
-    public DockerStartupAuthenticationProvider() throws GuacamoleException {
-        this.injector = Guice.createInjector(new DockerStartupAuthenticationProviderModule(this));
+    public DockerStartupProvider() throws GuacamoleException {
+        this.injector = Guice.createInjector(new DockerStartupProviderModule(this));
     }
     
     @Override

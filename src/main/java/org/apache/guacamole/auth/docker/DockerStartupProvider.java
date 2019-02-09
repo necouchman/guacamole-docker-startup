@@ -59,13 +59,15 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     
     @Override
     public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials) {
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
         return new DockerStartupUserContext(context);
     }
     
     @Override
     public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials) {
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
         return new DockerStartupUserContext(context);
     }
     

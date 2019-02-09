@@ -126,6 +126,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> allAttributes = super.getUserAttributes();
+        if (allAttributes == null)
+            return Collections.unmodifiableCollection(DockerStartupUser.ATTRIBUTES);
         allAttributes.addAll(DockerStartupUser.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }
@@ -133,6 +135,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserGroupAttributes() {
         Collection<Form> allAttributes = super.getUserGroupAttributes();
+        if (allAttributes == null)
+            return Collections.unmodifiableCollection(DockerStartupUserGroup.ATTRIBUTES);
         allAttributes.addAll(DockerStartupUserGroup.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }

@@ -32,12 +32,16 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class that handles the required Docker commands for interfacing
  * with Guacamole.
  */
 public class DockerStartupClient {
+    
+    private static final Logger logger = LoggerFactory.getLogger(DockerStartupClient.class);
     
     /**
      * The DockerClient instance used to talk with the Docker server and manage
@@ -63,8 +67,12 @@ public class DockerStartupClient {
      */
     public DockerStartupClient(DockerClientConfig config) throws GuacamoleException {
         
+        logger.debug(">>>DOCKER<<< Initializing the Docker Client...");
+        
         // Retrieve and store configuration
         this.config = config;
+        
+        logger.debug(">>>DOCKER<<< Initializing the client with the config.");
         
         // Build the client from the provided config.
         this.client = DockerClientBuilder.getInstance(config).build();

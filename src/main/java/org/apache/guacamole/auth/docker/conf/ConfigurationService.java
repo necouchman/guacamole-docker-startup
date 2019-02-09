@@ -33,6 +33,8 @@ import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The Configuration Service for the DockerStartup authentication module,
@@ -41,6 +43,8 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  */
 @Singleton
 public class ConfigurationService {
+    
+    private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
     
     /**
      * The local Guacamole Server environment.
@@ -407,7 +411,13 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public DockerClientConfig getDockerClientConfig() throws GuacamoleException {    
+    public DockerClientConfig getDockerClientConfig() throws GuacamoleException {
+        
+        logger.debug(">>>DOCKER<<< Returning Docker config with parameters...");
+        logger.debug(">>>DOCKER<<< Host: {}", getDockerHost());
+        logger.debug(">>>DOCKER<<< Verify: {}", getVerifyTls().toString());
+        logger.debug(">>>DOCKER<<< API: {}", getApiVersion().toString());
+        
         return DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(getDockerHost())
                 .withDockerTlsVerify(getVerifyTls())

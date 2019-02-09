@@ -140,6 +140,7 @@
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
             <version>1.0.0</version>
+            <scope>provided</scope>
         </dependency>
         
         <!-- Guice -->
@@ -147,6 +148,7 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>3.0</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- Docker Java -->

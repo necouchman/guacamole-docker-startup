@@ -178,4 +178,10 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
         
     }
     
+    public Boolean hasDockerConnection() {
+        return (attributes.containsKey(DOCKER_IMAGE_NAME_ATTRIBUTE)
+                && attributes.containsKey(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)
+                && attributes.containsKey(DOCKER_IMAGE_PORT_ATTRIBUTE));
+    }
+    
 }

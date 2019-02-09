@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
+import static org.apache.guacamole.auth.docker.user.DockerStartupUserGroup.DOCKER_IMAGE_NAME_ATTRIBUTE;
+import static org.apache.guacamole.auth.docker.user.DockerStartupUserGroup.DOCKER_IMAGE_PORT_ATTRIBUTE;
+import static org.apache.guacamole.auth.docker.user.DockerStartupUserGroup.DOCKER_IMAGE_PROTOCOL_ATTRIBUTE;
 import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
@@ -177,6 +180,12 @@ public class DockerStartupUser extends DelegatingUser {
         
         // Pass the buck.
         super.setAttributes(setAttributes);
+    }
+    
+    public Boolean hasDockerConnection() {
+        return (attributes.containsKey(DOCKER_IMAGE_NAME_ATTRIBUTE)
+                && attributes.containsKey(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)
+                && attributes.containsKey(DOCKER_IMAGE_PORT_ATTRIBUTE));
     }
     
 }

@@ -64,20 +64,19 @@ public class DockerStartupUserContext extends DelegatingUserContext {
      */
     private final String username;
     
-    public DockerStartupUserContext(UserContext userContext) {
+    private final Directory<User> userDirectory;
+    
+    private final Directory<UserGroup> groupDirectory;
+    
+    private final Directory<Connection> connectionDirectory;
+    
+    public DockerStartupUserContext(UserContext userContext)
+            throws GuacamoleException {
+        
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
         this.username = userContext.self().getIdentifier();
-    }
-    
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
-    }
-    
-    @Override
-    public Directory<User> getUserDirectory() throws GuacamoleException {
-        return new DecoratingDirectory<User>(super.getUserDirectory()) {
+        this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             
             @Override
             protected User decorate(User object) throws GuacamoleException {
@@ -99,11 +98,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
             
         };
-    }
-    
-    @Override
-    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
-        return new DecoratingDirectory<UserGroup>(super.getUserGroupDirectory()) {
+        
+        this.groupDirectory = new DecoratingDirectory<UserGroup>(super.getUserGroupDirectory()) {
             
             @Override
             protected UserGroup decorate(UserGroup object) throws GuacamoleException {
@@ -124,11 +120,29 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             }
             
         };
+        
+        this.connectionDirectory = 
+                new DockerStartupConnectionDirectory(super.getConnectionDirectory());
+    }
+    
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return authProvider;
+    }
+    
+    @Override
+    public Directory<User> getUserDirectory() throws GuacamoleException {
+        return userDirectory;
+    }
+    
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+        return groupDirectory;
     }
     
     @Override
     public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
-        return new DockerStartupConnectionDirectory(super.getConnectionDirectory());
+        return connectionDirectory;
     }
     
     @Override

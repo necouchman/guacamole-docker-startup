@@ -277,7 +277,7 @@ public class ConfigurationService {
      * @throws GuacamoleException 
      *     If guacamole.properties cannot be parsed.
      */
-    private String getDockerHost() throws GuacamoleException {
+    public String getDockerHost() throws GuacamoleException {
         return environment.getProperty(DOCKER_HOST,
                 "unix:///var/run/docker.sock");
     }

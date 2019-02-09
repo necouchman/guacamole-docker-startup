@@ -75,6 +75,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         this.connectionDirectory = 
                 new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         
+        logger.debug(">>>DOCKER<<< Docker host is {}", confService.getDockerHost());
+        
         logger.debug(">>>DOCKER<<< Initializing docker client.");
         DockerStartupClient dockerClient = new DockerStartupClient(confService.getDockerClientConfig());
         

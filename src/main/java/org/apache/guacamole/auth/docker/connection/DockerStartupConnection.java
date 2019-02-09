@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.docker.connection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
 import org.apache.guacamole.docker.DockerStartupClient;
-import org.apache.guacamole.docker.DockerStartupException;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 

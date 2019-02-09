@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.docker.user;
 
-import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -45,9 +44,6 @@ import org.apache.guacamole.net.auth.UserGroup;
  * @author nick_couchman
  */
 public class DockerStartupUserGroup extends DelegatingUserGroup {
-    
-    @Inject
-    private DockerStartupClient dockerClient;
     
     /**
      * The attribute for a group that specifies the Docker image name that
@@ -192,9 +188,12 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
                 && attributes.containsKey(DOCKER_IMAGE_PORT_ATTRIBUTE));
     }
     
-    public Connection getDockerConnection() throws GuacamoleException {
+    public Connection getDockerConnection(DockerStartupClient dockerClient)
+            throws GuacamoleException {
+        
         if (!hasDockerConnection())
             return null;
+        
         return new DockerStartupConnection(dockerClient,
                 attributes.get(DOCKER_IMAGE_NAME_ATTRIBUTE),
                 Integer.parseInt(attributes.get(DOCKER_IMAGE_PORT_ATTRIBUTE)),

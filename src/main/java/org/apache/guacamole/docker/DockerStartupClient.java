@@ -26,23 +26,18 @@ import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
-import com.google.inject.Inject;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 
 /**
  * A utility class that handles the required Docker commands for interfacing
  * with Guacamole.
  */
 public class DockerStartupClient {
-    
-    @Inject
-    private ConfigurationService confService;
     
     /**
      * The DockerClient instance used to talk with the Docker server and manage
@@ -60,13 +55,16 @@ public class DockerStartupClient {
      * DockerClientConfig, derived from the options specified in the
      * guacamole.properties file.
      * 
+     * @param config
+     *     The configuration to use for the client
+     * 
      * @throws GuacamoleException
      *     If an error occurs retrieving the configuration
      */
-    public DockerStartupClient() throws GuacamoleException {
+    public DockerStartupClient(DockerClientConfig config) throws GuacamoleException {
         
         // Retrieve and store configuration
-        this.config = confService.getDockerClientConfig();
+        this.config = config;
         
         // Build the client from the provided config.
         this.client = DockerClientBuilder.getInstance(config).build();

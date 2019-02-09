@@ -49,9 +49,6 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  */
 public class DockerStartupUserContext extends DelegatingUserContext {
     
-    /**
-     * The configuration service for this module.
-     */
     @Inject
     private ConfigurationService confService;
     
@@ -59,11 +56,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
      * The authentication provider associated with this user context.
      */
     private final AuthenticationProvider authProvider;
-    
-    /**
-     * The username used to log in to Guacamole.
-     */
-    private final String username;
     
     private final Directory<User> userDirectory;
     
@@ -76,9 +68,11 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
-        this.username = userContext.self().getIdentifier();
         this.connectionDirectory = 
                 new DockerStartupConnectionDirectory(super.getConnectionDirectory());
+        
+        DockerStartupClient dockerClient = new DockerStartupClient(confService.getDockerClientConfig());
+        
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             
             @Override
@@ -92,7 +86,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                     canUpdate = true;
                 DockerStartupUser decoratedUser = new DockerStartupUser(object, canUpdate);
                 if (decoratedUser.hasDockerConnection())
-                    connectionDirectory.add(decoratedUser.getDockerConnection());
+                    connectionDirectory.add(decoratedUser.getDockerConnection(dockerClient));
                 return decoratedUser;
             }
             
@@ -118,7 +112,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                     canUpdate = true;
                 DockerStartupUserGroup decoratedGroup = new DockerStartupUserGroup(object, canUpdate);
                 if (decoratedGroup.hasDockerConnection())
-                    connectionDirectory.add(decoratedGroup.getDockerConnection());
+                    connectionDirectory.add(decoratedGroup.getDockerConnection(dockerClient));
                 return decoratedGroup;
                     
                 

@@ -20,12 +20,12 @@
 package org.apache.guacamole.auth.docker.user;
 
 import com.google.inject.Inject;
+import java.util.Collection;
+import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
-import org.apache.guacamole.net.auth.AbstractUserContext;
+import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -37,8 +37,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleUser;
 
 /**
  * A UserContext that delegates authentication and storage of user attributes
@@ -123,6 +121,20 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             }
             
         };
+    }
+    
+    @Override
+    public Collection<Form> getUserAttributes() {
+        Collection<Form> allAttributes = super.getUserAttributes();
+        allAttributes.addAll(DockerStartupUser.ATTRIBUTES);
+        return Collections.unmodifiableCollection(allAttributes);
+    }
+    
+    @Override
+    public Collection<Form> getUserGroupAttributes() {
+        Collection<Form> allAttributes = super.getUserGroupAttributes();
+        allAttributes.addAll(DockerStartupUserGroup.ATTRIBUTES);
+        return Collections.unmodifiableCollection(allAttributes);
     }
     
 }

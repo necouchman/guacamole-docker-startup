@@ -74,8 +74,8 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
      */
     public static final List<String> DOCKER_IMAGE_ATTRIBUTES = Arrays.asList(
             DOCKER_IMAGE_NAME_ATTRIBUTE,
+            DOCKER_IMAGE_PORT_ATTRIBUTE,
             DOCKER_IMAGE_PROTOCOL_ATTRIBUTE,
-            DOCKER_IMAGE_CMD_ATTRIBUTE,
             DOCKER_IMAGE_CMD_ATTRIBUTE
     );
     

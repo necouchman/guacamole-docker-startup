@@ -25,8 +25,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
+import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -122,6 +124,11 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             }
             
         };
+    }
+    
+    @Override
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+        return new DockerStartupConnectionDirectory(super.getConnectionDirectory());
     }
     
     @Override

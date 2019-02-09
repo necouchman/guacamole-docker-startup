@@ -23,13 +23,15 @@ import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
+import org.apache.guacamole.net.auth.DecoratingDirectory;
+import org.apache.guacamole.net.auth.Directory;
 
 /**
  * A directory containing a single connection that is started in a Docker
  * container.
  */
-public class DockerStartupConnectionDirectory extends SimpleDirectory<Connection> {
+public class DockerStartupConnectionDirectory 
+        extends DecoratingDirectory<Connection> {
     
     /**
      * The configuration service for this module.
@@ -37,8 +39,19 @@ public class DockerStartupConnectionDirectory extends SimpleDirectory<Connection
     @Inject
     private ConfigurationService confService;
     
-    public DockerStartupConnectionDirectory() throws GuacamoleException {
-        
+    public DockerStartupConnectionDirectory(Directory<Connection> directory)
+            throws GuacamoleException {
+        super(directory);
+    }
+    
+    @Override
+    public Connection decorate(Connection object) {
+        return object;
+    }
+    
+    @Override
+    public Connection undecorate(Connection object) {
+        return object;
     }
     
 }

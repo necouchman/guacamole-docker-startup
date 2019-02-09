@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.docker.connection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
 import org.apache.guacamole.docker.DockerStartupClient;
+import org.apache.guacamole.docker.DockerStartupException;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
@@ -35,10 +36,42 @@ public class DockerStartupConnection extends SimpleConnection {
      */
     private final DockerStartupClient client;
     
+    /**
+     * The identifier of the container associated with this Connection.
+     */
     private final String containerId;
     
+    /**
+     * The object that describes the Guacamole Configuration associated with
+     * this Connection.
+     */
     private final GuacamoleConfiguration config;
     
+    /**
+     * Create a new Docker Startup Connection, with the given client, image
+     * name, port, container name, command, and protocol.
+     * 
+     * @param client
+     *     The DockerStartupClient that will be used to start this container.
+     * 
+     * @param imageName
+     *     The name of the image that will be used as the base for the container.
+     * 
+     * @param imagePort
+     *     The port on which the container will listen.
+     * 
+     * @param containerName
+     *     The name to assign the container.
+     * 
+     * @param imageCmd
+     *     The command to run to start the container.
+     * 
+     * @param imageProtocol
+     *     The protocol to use to access the container.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs starting the container.
+     */
     public DockerStartupConnection(DockerStartupClient client, String imageName,
             int imagePort, String containerName, String imageCmd,
             GuacamoleProtocol imageProtocol) 
@@ -51,7 +84,22 @@ public class DockerStartupConnection extends SimpleConnection {
         config.setProtocol(imageProtocol.toString());
         config.setParameters(client.getContainerConnection(containerId));
         super.setConfiguration(this.config);
+        super.setName(containerName);
         
+    }
+    
+    public DockerStartupConnection(DockerStartupClient client, String imageName,
+            int imagePort, String containerName, GuacamoleProtocol imageProtocol)
+            throws GuacamoleException {
+        this(client, imageName, imagePort, containerName, null, imageProtocol);
+    }
+    
+    public String getContainerId() {
+        return containerId;
+    }
+    
+    public String stopContainer() throws GuacamoleException {
+        return client.stopContainer(containerId);
     }
     
     

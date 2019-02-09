@@ -18,7 +18,7 @@
         "SECTION_HEADER_DOCKER_IMAGE" : "Docker Image Attributes"
     },
     
-    "USER_GROUP_ATTRIBTUES" : {
+    "USER_GROUP_ATTRIBUTES" : {
         "FIELD_HEADER_DOCKER_IMAGE_CMD"      : "Image command",
         "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
         "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",

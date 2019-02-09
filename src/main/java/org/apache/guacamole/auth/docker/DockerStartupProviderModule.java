@@ -68,7 +68,6 @@ public class DockerStartupProviderModule extends AbstractModule {
         
         // Bind DockerStartup-specific classes.
         bind(ConfigurationService.class);
-        bind(DockerStartupUserContext.class);
     }
     
 }

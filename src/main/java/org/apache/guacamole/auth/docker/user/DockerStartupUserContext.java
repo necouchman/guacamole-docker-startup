@@ -41,6 +41,8 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A UserContext that delegates authentication and storage of user attributes
@@ -48,6 +50,8 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  * a Docker container.
  */
 public class DockerStartupUserContext extends DelegatingUserContext {
+    
+    private static final Logger logger = LoggerFactory.getLogger(DockerStartupUserContext.class);
     
     @Inject
     private ConfigurationService confService;
@@ -71,8 +75,10 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         this.connectionDirectory = 
                 new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         
+        logger.debug(">>>DOCKER<<< Initializing docker client.");
         DockerStartupClient dockerClient = new DockerStartupClient(confService.getDockerClientConfig());
         
+        logger.debug(">>>DOCKER<<< Building user directory.");
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             
             @Override
@@ -99,6 +105,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
         };
         
+        logger.debug(">>>DOCKER<<< Building group directory.");
         this.groupDirectory = new DecoratingDirectory<UserGroup>(super.getUserGroupDirectory()) {
             
             @Override

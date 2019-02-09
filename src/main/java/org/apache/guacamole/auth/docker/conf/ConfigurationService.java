@@ -100,8 +100,8 @@ public class ConfigurationService {
      * A property that configures the API version used to talk ot the Docker
      * host.
      */
-    public final static StringGuacamoleProperty DOCKER_API_VERSION =
-            new StringGuacamoleProperty() {
+    public final static RemoteApiVersionProperty DOCKER_API_VERSION =
+            new RemoteApiVersionProperty() {
     
         @Override
         public String getName() { return "docker-api-version"; }
@@ -215,7 +215,7 @@ public class ConfigurationService {
      *     missing.
      */
     public String getDockerImageName() throws GuacamoleException {
-        return environment.getRequiredProperty(DOCKER_IMAGE_NAME);
+        return environment.getProperty(DOCKER_IMAGE_NAME);
     }
     
     /**
@@ -230,7 +230,7 @@ public class ConfigurationService {
      *     found.
      */
     public GuacamoleProtocol getDockerImageProtocol() throws GuacamoleException {
-        return environment.getRequiredProperty(DOCKER_IMAGE_PROTOCOL);
+        return environment.getProperty(DOCKER_IMAGE_PROTOCOL);
     }
     
     /**
@@ -245,7 +245,7 @@ public class ConfigurationService {
      *     found.
      */
     public int getDockerImagePort() throws GuacamoleException {
-        return environment.getRequiredProperty(DOCKER_IMAGE_PORT);
+        return environment.getProperty(DOCKER_IMAGE_PORT);
     }
     
     /**
@@ -333,8 +333,8 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     private RemoteApiVersion getApiVersion() throws GuacamoleException {
-        return RemoteApiVersion.parseConfigWithDefault(
-                environment.getProperty(DOCKER_API_VERSION));
+        return environment.getProperty(DOCKER_API_VERSION,
+                RemoteApiVersion.VERSION_1_38);
     }
     
     /**
@@ -411,13 +411,7 @@ public class ConfigurationService {
         return DefaultDockerClientConfig.createDefaultConfigBuilder()
                 .withDockerHost(getDockerHost())
                 .withDockerTlsVerify(getVerifyTls())
-                .withDockerCertPath(getDockerCertPath().toString())
-                .withDockerConfig(getDockerConfigPath().toString())
                 .withApiVersion(getApiVersion())
-                .withRegistryUrl(getRegistryUrl().toString())
-                .withRegistryUsername(getRegistryUser())
-                .withRegistryPassword(getRegistryPassword())
-                .withRegistryEmail(getRegistryEmail())
                 .build();
     }
     

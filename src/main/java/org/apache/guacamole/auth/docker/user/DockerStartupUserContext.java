@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.docker.user;
 import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.form.Form;
@@ -125,18 +126,14 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     @Override
     public Collection<Form> getUserAttributes() {
-        Collection<Form> allAttributes = super.getUserAttributes();
-        if (allAttributes == null)
-            return Collections.unmodifiableCollection(DockerStartupUser.ATTRIBUTES);
+        Collection<Form> allAttributes = new HashSet<>(super.getUserAttributes());
         allAttributes.addAll(DockerStartupUser.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }
     
     @Override
     public Collection<Form> getUserGroupAttributes() {
-        Collection<Form> allAttributes = super.getUserGroupAttributes();
-        if (allAttributes == null)
-            return Collections.unmodifiableCollection(DockerStartupUserGroup.ATTRIBUTES);
+        Collection<Form> allAttributes = new HashSet<>(super.getUserGroupAttributes());
         allAttributes.addAll(DockerStartupUserGroup.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }

@@ -95,7 +95,7 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
             ));
     
     /**
-     * The collection of all forms that will be avaiable for this delegating
+     * The collection of all forms that will be available for this delegating
      * user group.
      */
     public static final Collection<Form> ATTRIBUTES = 

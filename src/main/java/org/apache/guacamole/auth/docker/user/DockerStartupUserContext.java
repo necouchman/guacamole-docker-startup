@@ -21,16 +21,22 @@ package org.apache.guacamole.auth.docker.user;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.auth.docker.DockerStartupProvider;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
 import org.apache.guacamole.net.auth.AbstractUserContext;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.DecoratingDirectory;
+import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 import org.apache.guacamole.net.auth.simple.SimpleUser;
 
@@ -39,7 +45,7 @@ import org.apache.guacamole.net.auth.simple.SimpleUser;
  * to another module, and provides for handling startup of and connection to
  * a Docker container.
  */
-public class DockerStartupUserContext extends AbstractUserContext {
+public class DockerStartupUserContext extends DelegatingUserContext {
     
     /**
      * The configuration service for this module.
@@ -57,10 +63,10 @@ public class DockerStartupUserContext extends AbstractUserContext {
      */
     private final String username;
     
-    public DockerStartupUserContext(AuthenticationProvider authProvider,
-            String username) {
-        this.authProvider = authProvider;
-        this.username = username;
+    public DockerStartupUserContext(UserContext userContext) {
+        super(userContext);
+        this.authProvider = userContext.getAuthenticationProvider();
+        this.username = userContext.self().getIdentifier();
     }
     
     @Override
@@ -69,23 +75,53 @@ public class DockerStartupUserContext extends AbstractUserContext {
     }
     
     @Override
-    public User self() {
-                return new SimpleUser(username) {
-
+    public Directory<User> getUserDirectory() throws GuacamoleException {
+        return new DecoratingDirectory<User>(super.getUserDirectory()) {
+            
             @Override
-            public ObjectPermissionSet getConnectionGroupPermissions()
-                    throws GuacamoleException {
-                return new SimpleObjectPermissionSet(
-                        getConnectionDirectory().getIdentifiers());
+            protected User decorate(User object) throws GuacamoleException {
+                Permissions effective = self().getEffectivePermissions();
+                SystemPermissionSet sys = effective.getSystemPermissions();
+                ObjectPermissionSet obj = effective.getUserPermissions();
+                Boolean canUpdate = false;
+                if (sys.hasPermission(SystemPermission.Type.ADMINISTER)
+                        || obj.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
+                    canUpdate = true;
+                return new DockerStartupUser(object, canUpdate);
             }
-
+            
             @Override
-            public ObjectPermissionSet getConnectionPermissions()
-                    throws GuacamoleException {
-                return new SimpleObjectPermissionSet(
-                        getConnectionGroupDirectory().getIdentifiers());
+            protected User undecorate(User object) throws GuacamoleException {
+                assert(object instanceof DockerStartupUser);
+                return ((DockerStartupUser) object).getUndecorated();
             }
-
+            
+            
+        };
+    }
+    
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+        return new DecoratingDirectory<UserGroup>(super.getUserGroupDirectory()) {
+            
+            @Override
+            protected UserGroup decorate(UserGroup object) throws GuacamoleException {
+                Permissions effective = self().getEffectivePermissions();
+                SystemPermissionSet sys = effective.getSystemPermissions();
+                ObjectPermissionSet obj = effective.getUserGroupPermissions();
+                Boolean canUpdate = false;
+                if (sys.hasPermission(SystemPermission.Type.ADMINISTER)
+                        || obj.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
+                    canUpdate = true;
+                return new DockerStartupUserGroup(object, canUpdate);
+            }
+            
+            @Override
+            protected UserGroup undecorate(UserGroup object) {
+                assert(object instanceof DockerStartupUserGroup);
+                return ((DockerStartupUserGroup) object).getUndecorated();
+            }
+            
         };
     }
 

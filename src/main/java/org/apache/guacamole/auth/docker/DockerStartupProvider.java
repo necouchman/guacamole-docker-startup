@@ -25,6 +25,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -57,8 +58,15 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     }
     
     @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser) {
-        return new DockerStartupUserContext(this, authenticatedUser.getIdentifier());
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials) {
+        return new DockerStartupUserContext(context);
+    }
+    
+    @Override
+    public UserContext redecorate(UserContext decorated, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials) {
+        return new DockerStartupUserContext(context);
     }
     
 }

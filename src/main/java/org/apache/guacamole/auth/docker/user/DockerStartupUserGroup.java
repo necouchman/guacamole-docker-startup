@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.docker.user;
 
+import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,11 +28,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
+import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
+import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
 import org.apache.guacamole.form.TextField;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DelegatingUserGroup;
 import org.apache.guacamole.net.auth.UserGroup;
 
@@ -40,6 +45,9 @@ import org.apache.guacamole.net.auth.UserGroup;
  * @author nick_couchman
  */
 public class DockerStartupUserGroup extends DelegatingUserGroup {
+    
+    @Inject
+    private DockerStartupClient dockerClient;
     
     /**
      * The attribute for a group that specifies the Docker image name that
@@ -182,6 +190,15 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
         return (attributes.containsKey(DOCKER_IMAGE_NAME_ATTRIBUTE)
                 && attributes.containsKey(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)
                 && attributes.containsKey(DOCKER_IMAGE_PORT_ATTRIBUTE));
+    }
+    
+    public Connection getDockerConnection() throws GuacamoleException {
+        return new DockerStartupConnection(dockerClient,
+                attributes.get(DOCKER_IMAGE_NAME_ATTRIBUTE),
+                Integer.parseInt(attributes.get(DOCKER_IMAGE_PORT_ATTRIBUTE)),
+                this.getIdentifier(),
+                attributes.get(DOCKER_IMAGE_CMD_ATTRIBUTE),
+                GuacamoleProtocol.valueOf(attributes.get(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)));
     }
     
 }

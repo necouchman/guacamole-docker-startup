@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
  * which provides the properties available in guacamole.properties for
  * configuring this module.
  */
+@Singleton
 public class ConfigurationService {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
@@ -50,6 +51,11 @@ public class ConfigurationService {
      */
     @Inject
     private Environment environment;
+    
+    public ConfigurationService() {
+        super();
+        logger.debug(">>>DOCKER<<< Initializing configuration service.");
+    }
     
     /**
      * The URI that will connect the Docker Client used in this module to a

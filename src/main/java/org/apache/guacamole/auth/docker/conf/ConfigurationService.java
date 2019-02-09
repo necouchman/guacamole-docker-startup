@@ -23,6 +23,7 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.RemoteApiVersion;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -38,6 +39,7 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  * which provides the properties available in guacamole.properties for
  * configuring this module.
  */
+@Singleton
 public class ConfigurationService {
     
     /**

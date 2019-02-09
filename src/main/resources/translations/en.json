@@ -3,12 +3,33 @@
         "NAME" : "Docker Startup Extension"
     },
     
-    "CONNECTION_ATTRIBUTES" : {
+    "USER_ATTRIBUTES" : {
         "FIELD_HEADER_DOCKER_IMAGE_CMD"      : "Image command",
         "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
         "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",
         "FIELD_HEADER_DOCKER_IMAGE_PROTOCOL" : "Image protocol",
         
-        "SECTION_HEADER_DOCKER_STARTUP_ATTRIBUTES" : "Docker Startup Attributes"
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_EMPTY"  : "",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_RDP"    : "RDP",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_SSH"    : "SSH",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_TELNET" : "Telnet",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_VNC"    : "VNC",
+        
+        "SECTION_HEADER_DOCKER_IMAGE" : "Docker Image Attributes"
+    },
+    
+    "USER_GROUP_ATTRIBTUES" : {
+        "FIELD_HEADER_DOCKER_IMAGE_CMD"      : "Image command",
+        "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
+        "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",
+        "FIELD_HEADER_DOCKER_IMAGE_PROTOCOL" : "Image protocol",
+        
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_EMPTY"  : "",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_RDP"    : "RDP",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_SSH"    : "SSH",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_TELNET" : "Telnet",
+        "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_VNC"    : "VNC",
+        
+        "SECTION_HEADER_DOCKER_IMAGE" : "Docker Image Attributes"
     }
 }

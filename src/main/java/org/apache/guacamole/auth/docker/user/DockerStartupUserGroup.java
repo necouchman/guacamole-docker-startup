@@ -91,7 +91,7 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
                                .map(GuacamoleProtocol::name)
                                .collect(Collectors.toList())),
                     new NumericField(DOCKER_IMAGE_PORT_ATTRIBUTE),
-                    new TextField(DOCKER_IMAGE_NAME_ATTRIBUTE)
+                    new TextField(DOCKER_IMAGE_CMD_ATTRIBUTE)
             ));
     
     /**

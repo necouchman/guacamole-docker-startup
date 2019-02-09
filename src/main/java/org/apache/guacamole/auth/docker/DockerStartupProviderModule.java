@@ -43,6 +43,11 @@ public class DockerStartupProviderModule extends AbstractModule {
     private final AuthenticationProvider authProvider;
     
     /**
+     * The configuration service for this module.
+     */
+    private final ConfigurationService confService;
+    
+    /**
      * Create a new instance of the DockerStartupAuthenticationProviderModule
      * with the specified calling AuthenticationProvider.
      * 
@@ -56,6 +61,7 @@ public class DockerStartupProviderModule extends AbstractModule {
         throws GuacamoleException {
         this.environment = new LocalEnvironment();
         this.authProvider = authProvider;
+        this.confService = new ConfigurationService();
     }
     
     @Override
@@ -64,9 +70,8 @@ public class DockerStartupProviderModule extends AbstractModule {
         // Bind core implementations of guacamole-ext classes
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
+        bind(ConfigurationService.class).toInstance(confService);
         
-        // Bind DockerStartup-specific classes.
-        bind(ConfigurationService.class);
     }
     
 }

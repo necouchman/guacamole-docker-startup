@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
  * which provides the properties available in guacamole.properties for
  * configuring this module.
  */
-@Singleton
 public class ConfigurationService {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);

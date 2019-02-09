@@ -124,13 +124,5 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
         };
     }
-
-    @Override
-    public Directory<Connection> getConnectionDirectory() 
-            throws GuacamoleException {
-
-        return new DockerStartupConnectionDirectory();
-        
-    }
     
 }

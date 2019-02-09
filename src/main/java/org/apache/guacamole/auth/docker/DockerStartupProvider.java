@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.docker;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -42,6 +43,11 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     private final Injector injector;
     
     /**
+     * Configuration service
+     */
+    private final ConfigurationService confService;
+    
+    /**
      * Configure a new instance of this authentication module.
      * 
      * @throws GuacamoleException
@@ -50,6 +56,7 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
      */
     public DockerStartupProvider() throws GuacamoleException {
         this.injector = Guice.createInjector(new DockerStartupProviderModule(this));
+        this.confService = injector.getInstance(ConfigurationService.class);
     }
     
     @Override

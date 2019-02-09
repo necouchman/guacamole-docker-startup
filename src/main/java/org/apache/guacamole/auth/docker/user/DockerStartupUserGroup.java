@@ -193,6 +193,8 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
     }
     
     public Connection getDockerConnection() throws GuacamoleException {
+        if (!hasDockerConnection())
+            return null;
         return new DockerStartupConnection(dockerClient,
                 attributes.get(DOCKER_IMAGE_NAME_ATTRIBUTE),
                 Integer.parseInt(attributes.get(DOCKER_IMAGE_PORT_ATTRIBUTE)),

@@ -77,6 +77,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
         this.username = userContext.self().getIdentifier();
+        this.connectionDirectory = 
+                new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             
             @Override
@@ -88,7 +90,10 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                 if (sys.hasPermission(SystemPermission.Type.ADMINISTER)
                         || obj.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
                     canUpdate = true;
-                return new DockerStartupUser(object, canUpdate);
+                DockerStartupUser decoratedUser = new DockerStartupUser(object, canUpdate);
+                if (decoratedUser.hasDockerConnection())
+                    connectionDirectory.add(decoratedUser.getDockerConnection());
+                return decoratedUser;
             }
             
             @Override
@@ -111,7 +116,12 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                 if (sys.hasPermission(SystemPermission.Type.ADMINISTER)
                         || obj.hasPermission(ObjectPermission.Type.UPDATE, object.getIdentifier()))
                     canUpdate = true;
-                return new DockerStartupUserGroup(object, canUpdate);
+                DockerStartupUserGroup decoratedGroup = new DockerStartupUserGroup(object, canUpdate);
+                if (decoratedGroup.hasDockerConnection())
+                    connectionDirectory.add(decoratedGroup.getDockerConnection());
+                return decoratedGroup;
+                    
+                
             }
             
             @Override
@@ -121,9 +131,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             }
             
         };
-        
-        this.connectionDirectory = 
-                new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         
     }
     

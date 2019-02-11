@@ -43,11 +43,6 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     private final Injector injector;
     
     /**
-     * Configuration service
-     */
-    private final ConfigurationService confService;
-    
-    /**
      * Configure a new instance of this authentication module.
      * 
      * @throws GuacamoleException
@@ -56,7 +51,6 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
      */
     public DockerStartupProvider() throws GuacamoleException {
         this.injector = Guice.createInjector(new DockerStartupProviderModule(this));
-        this.confService = injector.getInstance(ConfigurationService.class);
     }
     
     @Override
@@ -68,14 +62,16 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     public UserContext decorate(UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return new DockerStartupUserContext(context);
+        return new DockerStartupUserContext(context,
+                injector.getInstance(ConfigurationService.class));
     }
     
     @Override
     public UserContext redecorate(UserContext decorated, UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return new DockerStartupUserContext(context);
+        return new DockerStartupUserContext(context,
+                injector.getInstance(ConfigurationService.class));
     }
     
 }

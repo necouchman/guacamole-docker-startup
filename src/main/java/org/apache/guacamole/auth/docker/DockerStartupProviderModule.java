@@ -23,11 +23,9 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
-import org.apache.guacamole.net.auth.UserContext;
 
 /**
  * A module that handles injection of various classes in the Docker Startup
@@ -70,7 +68,6 @@ public class DockerStartupProviderModule extends AbstractModule {
         
         // Bind extension-specific classes
         bind(ConfigurationService.class).in(Singleton.class);
-        bind(DockerStartupUserContext.class);
         
     }
     

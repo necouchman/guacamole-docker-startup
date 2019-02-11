@@ -69,7 +69,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     private final Directory<Connection> connectionDirectory;
     
     @Inject
-    public DockerStartupUserContext(UserContext userContext)
+    public DockerStartupUserContext(@Named("context") UserContext userContext)
             throws GuacamoleException {
         
         super(userContext);

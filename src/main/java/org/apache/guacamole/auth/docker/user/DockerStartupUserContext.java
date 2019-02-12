@@ -30,6 +30,7 @@ import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -41,6 +42,7 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,6 +55,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private static final Logger logger = LoggerFactory.getLogger(DockerStartupUserContext.class);
     
+    private static final String ROOT_IDENTIFIER = "Docker";
+    
     /**
      * The authentication provider associated with this user context.
      */
@@ -63,6 +67,8 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     private final Directory<UserGroup> groupDirectory;
     
     private final Directory<Connection> connectionDirectory;
+    
+    private final ConnectionGroup rootGroup;
     
     public DockerStartupUserContext(UserContext userContext,
             ConfigurationService confService)

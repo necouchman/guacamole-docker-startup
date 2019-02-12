@@ -20,9 +20,12 @@
 package org.apache.guacamole.auth.docker.connection;
 
 import com.google.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Connection;
+import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.Directory;
 
@@ -39,9 +42,15 @@ public class DockerStartupConnectionDirectory
     @Inject
     private ConfigurationService confService;
     
-    public DockerStartupConnectionDirectory(Directory<Connection> directory)
-            throws GuacamoleException {
+    private final Map<String, Connection> connections;
+    
+    private final ConnectionGroup rootGroup;
+    
+    public DockerStartupConnectionDirectory(Directory<Connection> directory,
+            ConnectionGroup rootGroup) throws GuacamoleException {
         super(directory);
+        this.connections = new ConcurrentHashMap<>();
+        this.rootGroup = rootGroup;
     }
     
     @Override

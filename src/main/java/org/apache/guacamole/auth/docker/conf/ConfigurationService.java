@@ -19,9 +19,8 @@
 
 package org.apache.guacamole.auth.docker.conf;
 
-import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.RemoteApiVersion;
+import com.spotify.docker.client.DefaultDockerClient;
+import com.spotify.docker.client.DockerClient;
 import com.google.inject.Inject;
 import java.io.File;
 import java.net.URI;
@@ -107,8 +106,8 @@ public class ConfigurationService {
      * A property that configures the API version used to talk ot the Docker
      * host.
      */
-    public final static RemoteApiVersionProperty DOCKER_API_VERSION =
-            new RemoteApiVersionProperty() {
+    public final static StringGuacamoleProperty DOCKER_API_VERSION =
+            new StringGuacamoleProperty() {
     
         @Override
         public String getName() { return "docker-api-version"; }
@@ -339,9 +338,9 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    private RemoteApiVersion getApiVersion() throws GuacamoleException {
+    private String getApiVersion() throws GuacamoleException {
         return environment.getProperty(DOCKER_API_VERSION,
-                RemoteApiVersion.VERSION_1_38);
+                "1.38");
     }
     
     /**
@@ -414,18 +413,13 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public DockerClientConfig getDockerClientConfig() throws GuacamoleException {
+    public DockerClient getDockerClient() throws GuacamoleException {
         
-        logger.debug(">>>DOCKER<<< Returning Docker config with parameters...");
-        logger.debug(">>>DOCKER<<< Host: {}", getDockerHost());
-        logger.debug(">>>DOCKER<<< Verify: {}", getVerifyTls().toString());
-        logger.debug(">>>DOCKER<<< API: {}", getApiVersion().toString());
-        
-        return DefaultDockerClientConfig.createDefaultConfigBuilder()
-                .withDockerHost(getDockerHost())
-                .withDockerTlsVerify(getVerifyTls())
-                .withApiVersion(getApiVersion())
+        return DefaultDockerClient.builder()
+                .apiVersion(getApiVersion())
+                .uri(getDockerHost())
                 .build();
+
     }
     
 }

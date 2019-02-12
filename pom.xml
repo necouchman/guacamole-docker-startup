@@ -153,9 +153,9 @@
 
         <!-- Docker Java -->
         <dependency>
-            <groupId>com.github.docker-java</groupId>
-            <artifactId>docker-java</artifactId>
-            <version>3.1.1</version>
+            <groupId>com.spotify</groupId>
+            <artifactId>docker-client</artifactId>
+            <version>8.15.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

@@ -19,17 +19,18 @@
 
 package org.apache.guacamole.docker;
 
-import com.github.dockerjava.api.DockerClient;
-import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.HostConfig;
-import com.github.dockerjava.api.model.Ports;
-import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.core.DockerClientConfig;
+import com.spotify.docker.client.DockerClient;
+import com.spotify.docker.client.exceptions.DockerException;
+import com.spotify.docker.client.messages.ContainerConfig;
+import com.spotify.docker.client.messages.ContainerCreation;
+import com.spotify.docker.client.messages.HostConfig;
+import com.spotify.docker.client.messages.PortBinding;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 
@@ -46,28 +47,20 @@ public class DockerStartupClient {
     private final DockerClient client;
     
     /**
-     * The configuration used to connect to Docker.
-     */
-    private final DockerClientConfig config;
-    
-    /**
      * Configure a new instance of the DockerStartupClient with the given
      * DockerClientConfig, derived from the options specified in the
      * guacamole.properties file.
      * 
-     * @param config
-     *     The configuration to use for the client
+     * @param client
+     *     The Docker client to use.
      * 
      * @throws GuacamoleException
      *     If an error occurs retrieving the configuration
      */
-    public DockerStartupClient(DockerClientConfig config) throws GuacamoleException {
-        
-        // Retrieve and store configuration
-        this.config = config;
+    public DockerStartupClient(DockerClient client) throws GuacamoleException {
         
         // Build the client from the provided config.
-        this.client = DockerClientBuilder.getInstance(config).build();
+        this.client = client;
         
     }
     
@@ -79,16 +72,6 @@ public class DockerStartupClient {
      */
     public DockerClient getClient() {
         return client;
-    }
-    
-    /**
-     * Return the DockerClientConfig that generated this client instance.
-     * 
-     * @return 
-     *     The DockerClientConfig used to generate this Docker client instance.
-     */
-    public DockerClientConfig getConfig() {
-        return config;
     }
     
     /**
@@ -121,28 +104,34 @@ public class DockerStartupClient {
             String containerName, String imageCmd) throws DockerStartupException {
         
         // Set up the port bindings
-        ExposedPort containerPort = ExposedPort.tcp(imagePort);
-        Ports portBindings = new Ports();
-        portBindings.bind(containerPort, Ports.Binding.bindPortSpec(null));
-        HostConfig hostConfig = new HostConfig()
-                .withPortBindings(portBindings)
-                .withPublishAllPorts(true);
+        final Map<String, List<PortBinding>> portBindings = new HashMap<>();
+        final List<PortBinding> randomPort = new ArrayList<>();
+        randomPort.add(PortBinding.randomPort("0.0.0.0"));
+        portBindings.put(Integer.toString(imagePort), randomPort);
+        final HostConfig hostConfig = HostConfig.builder()
+                .portBindings(portBindings)
+                .build();
+        
+        ContainerConfig containerConfig = ContainerConfig.builder()
+                .hostConfig(hostConfig)
+                .exposedPorts(Integer.toString(imagePort))
+                .image(imageName)
+                .build();
+        
+        if (imageCmd != null && !imageCmd.isEmpty())
+            containerConfig = containerConfig.toBuilder().cmd(imageCmd).build();
         
         // Create the command to start the container
-        CreateContainerCmd containerCmd = client.createContainerCmd(imageName)
-                .withName(containerName)
-                .withExposedPorts(containerPort)
-                .withHostConfig(hostConfig);
-        if (imageCmd != null && !imageCmd.isEmpty())
-            containerCmd.withCmd(imageCmd);
-        String cid = containerCmd.exec().getId();
+
         
         // Start the container and wait, returning the container ID
         try {
-            client.startContainerCmd(cid).exec().wait();
+            final ContainerCreation container = client.createContainer(containerConfig);
+            String cid = container.id();
+            client.startContainer(cid);
             return cid;
         }
-        catch (InterruptedException e) {
+        catch (DockerException | InterruptedException e) {
             throw new DockerStartupException("Startup interrupted.", e);
         }
         
@@ -168,15 +157,15 @@ public class DockerStartupClient {
             throws DockerStartupException {
         
         try {
-            InetAddress hostAddr = InetAddress.getByName(config.getDockerHost().getHost());
-            Ports publishedPorts = client.inspectContainerCmd(containerId)
-                    .exec().getNetworkSettings().getPorts();
+            InetAddress hostAddr = InetAddress.getByName(client.getHost());
+            Map<String,List<PortBinding>> publishedPorts = client
+                    .inspectContainer(containerId).networkSettings().ports();
             Map<String, String> connectionParameters = new HashMap<>();
             connectionParameters.put("hostname", hostAddr.toString());
             connectionParameters.put("port", publishedPorts.toString());
             return connectionParameters;
         }
-        catch (UnknownHostException e) {
+        catch (DockerException | InterruptedException | UnknownHostException e) {
             throw new DockerStartupException("Cannot resolve docker host.", e);
         }
         
@@ -199,10 +188,10 @@ public class DockerStartupClient {
             throws DockerStartupException {
         
         try {
-            client.stopContainerCmd(containerId).exec().wait();
+            client.stopContainer(containerId, 60);
             return containerId;
         }
-        catch (InterruptedException e) {
+        catch (DockerException | InterruptedException e) {
             throw new DockerStartupException("Container stop interrupted.", e);
         }
         
@@ -210,10 +199,8 @@ public class DockerStartupClient {
     
     @Override
     public void finalize() throws Throwable {
-        try {
-            client.close();
-        }
-        catch (IOException e) {}
+
+        client.close();
         
         super.finalize();
         

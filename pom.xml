@@ -68,6 +68,7 @@
                         <configuration>
                             <includeScope>runtime</includeScope>
                             <outputDirectory>${project.build.directory}/classes</outputDirectory>
+                            <excludes>META-INF/*.SF,META-INF/*.DSA</excludes>
                         </configuration>
                     </execution>
                 </executions>
@@ -156,7 +157,6 @@
             <groupId>com.github.docker-java</groupId>
             <artifactId>docker-java</artifactId>
             <version>3.1.1</version>
-            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

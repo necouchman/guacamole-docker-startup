@@ -44,13 +44,12 @@ public class DockerStartupConnectionDirectory
     
     private final Map<String, Connection> connections;
     
-    private final ConnectionGroup rootGroup;
+    // private final ConnectionGroup rootGroup;
     
-    public DockerStartupConnectionDirectory(Directory<Connection> directory,
-            ConnectionGroup rootGroup) throws GuacamoleException {
+    public DockerStartupConnectionDirectory(Directory<Connection> directory) throws GuacamoleException {
         super(directory);
         this.connections = new ConcurrentHashMap<>();
-        this.rootGroup = rootGroup;
+        // this.rootGroup = rootGroup;
     }
     
     @Override

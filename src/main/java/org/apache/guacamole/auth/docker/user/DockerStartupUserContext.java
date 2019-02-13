@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.docker.user;
 
-import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -68,7 +67,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private final Directory<Connection> connectionDirectory;
     
-    private final ConnectionGroup rootGroup;
+    // private final ConnectionGroup rootGroup;
     
     public DockerStartupUserContext(UserContext userContext,
             ConfigurationService confService)
@@ -76,7 +75,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
-        this.connectionDirectory = 
+        this.connectionDirectory =
                 new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         
         logger.debug(">>>DOCKER<<< Docker host is {}", confService.getDockerHost());

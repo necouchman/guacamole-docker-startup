@@ -22,11 +22,13 @@ package org.apache.guacamole.auth.docker.connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A directory containing a single connection that is started in a Docker
@@ -34,6 +36,8 @@ import org.apache.guacamole.net.auth.simple.SimpleDirectory;
  */
 public class DockerStartupConnectionDirectory 
         extends SimpleDirectory<Connection> {
+    
+    private final static Logger logger = LoggerFactory.getLogger(DockerStartupConnectionDirectory.class);
     
     private final Map<String, Connection> connections;
     
@@ -44,6 +48,7 @@ public class DockerStartupConnectionDirectory
     
     @Override
     public void add(Connection connection) {
+        logger.debug(">>>DOCKER<<< Adding connection {} to directory.", connection.getIdentifier());
         connections.put(connection.getIdentifier(), connection);
     }
     
@@ -59,6 +64,11 @@ public class DockerStartupConnectionDirectory
             allConnections.add(connections.get(identifier));
         
         return allConnections;
+    }
+    
+    @Override
+    public Set<String> getIdentifiers() {
+        return connections.keySet();
     }
     
 }

@@ -21,6 +21,9 @@ package org.apache.guacamole.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.InspectContainerCmd;
+import com.github.dockerjava.api.command.InspectContainerResponse;
+import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports;
@@ -117,8 +120,11 @@ public class DockerStartupClient {
      * @throws DockerStartupException 
      *     If startup of the container is interrupted.
      */
-    public String startContainer(String imageName, int imagePort,
+    public String createContainer(String imageName, int imagePort,
             String containerName, String imageCmd) throws DockerStartupException {
+        
+        if (containerExists(imageName))
+            throw new DockerStartupException("Container already exists.");
         
         // Set up the port bindings
         ExposedPort containerPort = ExposedPort.tcp(imagePort);
@@ -135,18 +141,35 @@ public class DockerStartupClient {
                 .withHostConfig(hostConfig);
         if (imageCmd != null && !imageCmd.isEmpty())
             containerCmd.withCmd(imageCmd);
-        String cid = containerCmd.exec().getId();
+        return containerCmd.exec().getId();
+    }
+    
+    public void startContainer(String cid) throws DockerStartupException {
         
         // Start the container and wait, returning the container ID
         try {
-            client.startContainerCmd(cid).exec().wait();
-            return cid;
+            if (containerExists(cid))
+                client.startContainerCmd(cid).exec().wait();
+            else
+                throw new DockerStartupException("Container does not exist.");
         }
         catch (InterruptedException e) {
             throw new DockerStartupException("Startup interrupted.", e);
         }
         
         
+    }
+    
+    public Boolean containerExists(String cid) throws DockerStartupException {
+            InspectContainerResponse findContainer = client.inspectContainerCmd(cid).exec();
+            return (findContainer.getId() != null);
+    }
+    
+    public Boolean containerRunning(String cid) throws DockerStartupException {
+        if (!containerExists(cid))
+            return false;
+        ContainerState containerState = client.inspectContainerCmd(cid).exec().getState();
+        return containerState.getRunning();
     }
     
     /**

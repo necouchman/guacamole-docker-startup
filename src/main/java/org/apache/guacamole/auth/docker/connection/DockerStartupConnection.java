@@ -77,8 +77,15 @@ public class DockerStartupConnection extends SimpleConnection {
             throws GuacamoleException {
         
         this.client = client;
-        this.containerId = client.startContainer(imageName, imagePort,
-                containerName, imageCmd);
+        if (!client.containerExists(imageName))
+            this.containerId = client.createContainer(imageName, imagePort,
+                    containerName, imageCmd);
+        else
+            this.containerId = imageName;
+        
+        if (!client.containerRunning(imageName))
+            client.startContainer(imageName);
+        
         this.config = new GuacamoleConfiguration();
         config.setProtocol(imageProtocol.toString());
         config.setParameters(client.getContainerConnection(containerId));

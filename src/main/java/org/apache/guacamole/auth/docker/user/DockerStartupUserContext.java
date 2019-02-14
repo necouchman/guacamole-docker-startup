@@ -67,7 +67,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private final Directory<Connection> connectionDirectory;
     
-    // private final ConnectionGroup rootGroup;
+    private final ConnectionGroup rootGroup;
     
     public DockerStartupUserContext(UserContext userContext,
             ConfigurationService confService)
@@ -76,7 +76,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
         this.connectionDirectory =
-                new DockerStartupConnectionDirectory(super.getConnectionDirectory());
+                new DockerStartupConnectionDirectory();
         
         logger.debug(">>>DOCKER<<< Docker host is {}", confService.getDockerHost());
         
@@ -138,6 +138,10 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
         };
         
+        this.rootGroup = new SimpleConnectionGroup(ROOT_IDENTIFIER,
+                ROOT_IDENTIFIER, connectionDirectory.getIdentifiers(),
+                Collections.emptyList());
+        
     }
     
     @Override
@@ -158,6 +162,11 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     @Override
     public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
         return connectionDirectory;
+    }
+    
+    @Override
+    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
+        return rootGroup;
     }
     
     @Override

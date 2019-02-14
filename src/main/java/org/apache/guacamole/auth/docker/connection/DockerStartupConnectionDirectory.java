@@ -19,47 +19,46 @@
 
 package org.apache.guacamole.auth.docker.connection;
 
-import com.google.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.DecoratingDirectory;
-import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 
 /**
  * A directory containing a single connection that is started in a Docker
  * container.
  */
 public class DockerStartupConnectionDirectory 
-        extends DecoratingDirectory<Connection> {
-    
-    /**
-     * The configuration service for this module.
-     */
-    @Inject
-    private ConfigurationService confService;
+        extends SimpleDirectory<Connection> {
     
     private final Map<String, Connection> connections;
     
-    // private final ConnectionGroup rootGroup;
-    
-    public DockerStartupConnectionDirectory(Directory<Connection> directory) throws GuacamoleException {
-        super(directory);
+    public DockerStartupConnectionDirectory()
+            throws GuacamoleException {
         this.connections = new ConcurrentHashMap<>();
-        // this.rootGroup = rootGroup;
     }
     
     @Override
-    public Connection decorate(Connection object) {
-        return object;
+    public void add(Connection connection) {
+        connections.put(connection.getIdentifier(), connection);
     }
     
     @Override
-    public Connection undecorate(Connection object) {
-        return object;
+    public Connection get(String identifier) {
+        return connections.get(identifier);
+    }
+    
+    @Override
+    public Collection<Connection> getAll(Collection<String> identifiers) {
+        Collection<Connection> allConnections = new ArrayList<>();
+        for (String identifier : identifiers)
+            allConnections.add(connections.get(identifier));
+        
+        return allConnections;
     }
     
 }

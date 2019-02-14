@@ -24,6 +24,7 @@ import com.github.dockerjava.api.command.CreateContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
+import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports;
@@ -171,9 +172,14 @@ public class DockerStartupClient {
     
     public Boolean containerExists(String cid) throws DockerStartupException {
         logger.debug(">>>DOCKER<<< Checking if container {} exists.", cid);
-        InspectContainerResponse findContainer = client.inspectContainerCmd(cid).exec();
-        logger.debug(">>>DOCKER<<< Container id {}", findContainer.getId());
+        try {
+            InspectContainerResponse findContainer = client.inspectContainerCmd(cid).exec();
             return (findContainer.getId() != null);
+        }
+        catch (NotFoundException e) {
+            logger.debug(">>>DOCKER<<< Container {} not found.", cid);
+            return false;
+        }
     }
     
     public Boolean containerRunning(String cid) throws DockerStartupException {

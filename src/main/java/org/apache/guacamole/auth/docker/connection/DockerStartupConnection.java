@@ -89,7 +89,7 @@ public class DockerStartupConnection extends SimpleConnection {
         this.config = new GuacamoleConfiguration();
         config.setProtocol(imageProtocol.toString());
         config.setParameters(client.getContainerConnection(containerId));
-        super.setIdentifier(containerName);
+        super.setIdentifier(this.containerId);
         super.setConfiguration(this.config);
         super.setName(containerName);
         

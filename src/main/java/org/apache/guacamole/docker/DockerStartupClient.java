@@ -35,12 +35,16 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A utility class that handles the required Docker commands for interfacing
  * with Guacamole.
  */
 public class DockerStartupClient {
+    
+    private final static Logger logger = LoggerFactory.getLogger(DockerStartupClient.class);
     
     /**
      * The DockerClient instance used to talk with the Docker server and manage
@@ -123,6 +127,9 @@ public class DockerStartupClient {
     public String createContainer(String imageName, int imagePort,
             String containerName, String imageCmd) throws DockerStartupException {
         
+        logger.debug(">>>DOCKER<<< Creating container {} from image {}",
+                containerName, imageName);
+        
         if (containerExists(imageName))
             throw new DockerStartupException("Container already exists.");
         
@@ -146,6 +153,8 @@ public class DockerStartupClient {
     
     public void startContainer(String cid) throws DockerStartupException {
         
+        logger.debug(">>>DOCKER<<< Startin container {}", cid);
+        
         // Start the container and wait, returning the container ID
         try {
             if (containerExists(cid))
@@ -161,14 +170,18 @@ public class DockerStartupClient {
     }
     
     public Boolean containerExists(String cid) throws DockerStartupException {
-            InspectContainerResponse findContainer = client.inspectContainerCmd(cid).exec();
+        logger.debug(">>>DOCKER<<< Checking if container {} exists.", cid);
+        InspectContainerResponse findContainer = client.inspectContainerCmd(cid).exec();
+        logger.debug(">>>DOCKER<<< Container id {}", findContainer.getId());
             return (findContainer.getId() != null);
     }
     
     public Boolean containerRunning(String cid) throws DockerStartupException {
+        logger.debug(">>>DOCKER<<< Checking if container {} is running", cid);
         if (!containerExists(cid))
             return false;
         ContainerState containerState = client.inspectContainerCmd(cid).exec().getState();
+        logger.debug(">>>DOCKER<<< Container {} in state {}", containerState.getStatus());
         return containerState.getRunning();
     }
     
@@ -189,6 +202,8 @@ public class DockerStartupClient {
      */
     public Map<String, String> getContainerConnection(String containerId)
             throws DockerStartupException {
+        
+        logger.debug("Retrieving parameters for container {}", containerId);
         
         try {
             InetAddress hostAddr = InetAddress.getByName(config.getDockerHost().getHost());
@@ -220,6 +235,11 @@ public class DockerStartupClient {
      */
     public String stopContainer(String containerId)
             throws DockerStartupException {
+        
+        logger.debug(">>>DOCKER<<< Stopping container {}", containerId);
+        
+        if (!containerExists(containerId))
+            throw new DockerStartupException("Container " + containerId + " does not exist.");
         
         try {
             client.stopContainerCmd(containerId).exec().wait();

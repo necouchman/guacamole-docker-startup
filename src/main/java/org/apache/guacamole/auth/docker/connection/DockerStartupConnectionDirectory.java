@@ -26,7 +26,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
+import org.apache.guacamole.net.auth.DecoratingDirectory;
+import org.apache.guacamole.net.auth.Directory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,14 +36,15 @@ import org.slf4j.LoggerFactory;
  * container.
  */
 public class DockerStartupConnectionDirectory 
-        extends SimpleDirectory<Connection> {
+        extends DecoratingDirectory<Connection> {
     
     private final static Logger logger = LoggerFactory.getLogger(DockerStartupConnectionDirectory.class);
     
     private final Map<String, Connection> connections;
     
-    public DockerStartupConnectionDirectory()
+    public DockerStartupConnectionDirectory(Directory<Connection> directory)
             throws GuacamoleException {
+        super(directory);
         this.connections = new ConcurrentHashMap<>();
     }
     
@@ -69,6 +71,16 @@ public class DockerStartupConnectionDirectory
     @Override
     public Set<String> getIdentifiers() {
         return connections.keySet();
+    }
+    
+    @Override
+    public Connection decorate(Connection object) throws GuacamoleException {
+        return object;
+    }
+    
+    @Override
+    public Connection undecorate(Connection object) throws GuacamoleException {
+        return object;
     }
     
 }

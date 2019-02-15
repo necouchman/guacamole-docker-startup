@@ -38,7 +38,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
 import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

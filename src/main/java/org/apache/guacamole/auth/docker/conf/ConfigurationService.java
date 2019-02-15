@@ -23,7 +23,6 @@ import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientConfig;
 import com.github.dockerjava.core.RemoteApiVersion;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,7 +40,6 @@ import org.slf4j.LoggerFactory;
  * which provides the properties available in guacamole.properties for
  * configuring this module.
  */
-@Singleton
 public class ConfigurationService {
     
     private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);

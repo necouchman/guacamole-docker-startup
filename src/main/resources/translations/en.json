@@ -8,6 +8,9 @@
         "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
         "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",
         "FIELD_HEADER_DOCKER_IMAGE_PROTOCOL" : "Image protocol",
+        "FIELD_HEADER_DOCKER_IMAGE_USER"     : "Image username",
+        "FIELD_HEADER_DOCKER_IMAGE_PASSWORD" : "Image password",
+        "FIELD_HEADER_DOCKER_IMAGE_DOMAIN"   : "Image domain",
         
         "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_EMPTY"  : "",
         "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_RDP"    : "RDP",
@@ -23,6 +26,9 @@
         "FIELD_HEADER_DOCKER_IMAGE_NAME"     : "Image name",
         "FIELD_HEADER_DOCKER_IMAGE_PORT"     : "Image port",
         "FIELD_HEADER_DOCKER_IMAGE_PROTOCOL" : "Image protocol",
+        "FIELD_HEADER_DOCKER_IMAGE_USER"     : "Image username",
+        "FIELD_HEADER_DOCKER_IMAGE_PASSWORD" : "Image password",
+        "FIELD_HEADER_DOCKER_IMAGE_DOMAIN"   : "Image domain",
         
         "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_EMPTY"  : "",
         "FIELD_OPTION_DOCKER_IMAGE_PROTOCOL_RDP"    : "RDP",

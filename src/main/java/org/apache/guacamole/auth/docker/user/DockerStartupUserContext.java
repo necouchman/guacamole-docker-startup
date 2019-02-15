@@ -26,6 +26,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.Form;
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -37,6 +38,8 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.auth.simple.SimpleConnectionDirectory;
+import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +70,17 @@ public class DockerStartupUserContext extends DelegatingUserContext {
      */
     private final Directory<UserGroup> groupDirectory;
     
+    private final Directory<Connection> connectionDirectory;
+    
     public DockerStartupUserContext(UserContext userContext,
             DockerStartupClient dockerClient) throws GuacamoleException {
         
         super(userContext);
         
         logger.debug(">>>DOCKER<<< Building user directory.");
+        
+        connectionDirectory = new SimpleDirectory<>();
+        
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             
             @Override
@@ -86,7 +94,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                     canUpdate = true;
                 DockerStartupUser decoratedUser = new DockerStartupUser(object, canUpdate);
                 if (decoratedUser.hasDockerConnection())
-                    getConnectionDirectory().add(decoratedUser.getDockerConnection(dockerClient));
+                    connectionDirectory.add(decoratedUser.getDockerConnection(dockerClient));
                 return decoratedUser;
             }
             
@@ -113,7 +121,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
                     canUpdate = true;
                 DockerStartupUserGroup decoratedGroup = new DockerStartupUserGroup(object, canUpdate);
                 if (decoratedGroup.hasDockerConnection())
-                    getConnectionDirectory().add(decoratedGroup.getDockerConnection(dockerClient));
+                    connectionDirectory.add(decoratedGroup.getDockerConnection(dockerClient));
                 return decoratedGroup;
                     
                 

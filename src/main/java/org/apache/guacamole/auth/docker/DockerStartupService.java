@@ -24,17 +24,24 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.net.auth.UserContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A class that handles services related to the Docker Startup service.
  */
 public class DockerStartupService {
     
+    private static final Logger logger = LoggerFactory.getLogger(DockerStartupService.class);
+    
     @Inject
     private ConfigurationService confService;
     
     public UserContext decorate(UserContext userContext)
             throws GuacamoleException {
+        
+        logger.debug(">>>DOCKER<<< Setting up decoration with docker host {}", confService.getDockerHost());
+        
         return new DockerStartupUserContext(userContext);
     }
     

@@ -24,11 +24,15 @@ import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A connection type use for Docker Startup connections.
  */
 public class DockerStartupConnection extends SimpleConnection {
+    
+    private static final Logger logger = LoggerFactory.getLogger(DockerStartupConnection.class);
     
     /**
      * The DockerStartupClient to use for starting up this connection.
@@ -76,6 +80,11 @@ public class DockerStartupConnection extends SimpleConnection {
             GuacamoleProtocol imageProtocol) 
             throws GuacamoleException {
         
+        logger.debug(">>>DOCKER<<< Image: {}", imageName);
+        logger.debug(">>>DOCKER<<< Port: {}", Integer.toString(imagePort));
+        logger.debug(">>>DOCKER<<< Cmd: {}", imageCmd);
+        logger.debug(">>>DOCKER<<< Protocol: {}", imageProtocol.toString());
+        
         this.client = client;
         if (!client.containerExists(containerName))
             this.containerId = client.createContainer(imageName, imagePort,
@@ -87,7 +96,7 @@ public class DockerStartupConnection extends SimpleConnection {
             client.startContainer(containerName);
         
         this.config = new GuacamoleConfiguration();
-        config.setProtocol(imageProtocol.toString());
+        config.setProtocol(imageProtocol.toString().toLowerCase());
         config.setParameters(client.getContainerConnection(containerId));
         super.setIdentifier(this.containerId);
         super.setConfiguration(this.config);

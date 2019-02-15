@@ -209,12 +209,17 @@ public class DockerStartupClient {
     public Map<String, String> getContainerConnection(String containerId)
             throws DockerStartupException {
         
-        logger.debug("Retrieving parameters for container {}", containerId);
+        logger.debug(">>>DOCKER<<< Retrieving parameters for container {}", containerId);
         
         try {
+            
+            String host = config.getDockerHost().getHost();
+            logger.debug(">>>DOCKER<<< Container host: {}", host);
+            
             InetAddress hostAddr = InetAddress.getByName(config.getDockerHost().getHost());
             Ports publishedPorts = client.inspectContainerCmd(containerId)
                     .exec().getNetworkSettings().getPorts();
+            logger.debug(">>>DOCKER<<< Container ports: {}", publishedPorts.toString());
             Map<String, String> connectionParameters = new HashMap<>();
             connectionParameters.put("hostname", hostAddr.toString());
             connectionParameters.put("port", publishedPorts.toString());

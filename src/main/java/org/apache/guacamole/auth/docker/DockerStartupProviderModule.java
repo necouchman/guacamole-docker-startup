@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.docker;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -68,7 +67,6 @@ public class DockerStartupProviderModule extends AbstractModule {
         
         // Bind extension-specific classes
         bind(ConfigurationService.class);
-        bind(DockerStartupUserContext.class);
         
     }
     

@@ -34,6 +34,7 @@ import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.NumericField;
+import org.apache.guacamole.form.PasswordField;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DelegatingUserGroup;
@@ -72,6 +73,12 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
      */
     public static final String DOCKER_IMAGE_CMD_ATTRIBUTE = "docker-image-cmd";
     
+    public static final String DOCKER_IMAGE_USER_ATTRIBUTE = "docker-image-user";
+    
+    public static final String DOCKER_IMAGE_PASSWORD_ATTRIBUTE = "docker-image-password";
+    
+    public static final String DOCKER_IMAGE_DOMAIN_ATTRIBUTE = "docker-image-domain";
+    
     /**
      * The set of all attributes that are available for this delegating user
      * group.
@@ -80,7 +87,10 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
             DOCKER_IMAGE_NAME_ATTRIBUTE,
             DOCKER_IMAGE_PORT_ATTRIBUTE,
             DOCKER_IMAGE_PROTOCOL_ATTRIBUTE,
-            DOCKER_IMAGE_CMD_ATTRIBUTE
+            DOCKER_IMAGE_CMD_ATTRIBUTE,
+            DOCKER_IMAGE_USER_ATTRIBUTE,
+            DOCKER_IMAGE_PASSWORD_ATTRIBUTE,
+            DOCKER_IMAGE_DOMAIN_ATTRIBUTE
     );
     
     /**
@@ -95,7 +105,10 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
                                .map(GuacamoleProtocol::name)
                                .collect(Collectors.toList())),
                     new NumericField(DOCKER_IMAGE_PORT_ATTRIBUTE),
-                    new TextField(DOCKER_IMAGE_CMD_ATTRIBUTE)
+                    new TextField(DOCKER_IMAGE_CMD_ATTRIBUTE),
+                    new TextField(DOCKER_IMAGE_USER_ATTRIBUTE),
+                    new PasswordField(DOCKER_IMAGE_PASSWORD_ATTRIBUTE),
+                    new TextField(DOCKER_IMAGE_DOMAIN_ATTRIBUTE)
             ));
     
     /**

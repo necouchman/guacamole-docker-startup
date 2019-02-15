@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
+import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirectory;
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.Connection;
@@ -38,7 +39,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleDirectory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +78,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         
         logger.debug(">>>DOCKER<<< Building user directory.");
         
-        connectionDirectory = new SimpleDirectory<>();
+        connectionDirectory = new DockerStartupConnectionDirectory();
         
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
             

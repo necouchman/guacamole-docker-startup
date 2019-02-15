@@ -21,6 +21,7 @@ package org.apache.guacamole.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
+import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.exception.NotFoundException;
@@ -128,7 +129,7 @@ public class DockerStartupClient {
      * @throws DockerStartupException 
      *     If startup of the container is interrupted.
      */
-    public String createContainer(String imageName, int imagePort,
+    public synchronized String createContainer(String imageName, int imagePort,
             String containerName, String imageCmd) throws DockerStartupException {
         
         logger.debug(">>>DOCKER<<< Creating container {} from image {}",
@@ -152,7 +153,15 @@ public class DockerStartupClient {
                 .withHostConfig(hostConfig);
         if (imageCmd != null && !imageCmd.isEmpty())
             containerCmd.withCmd(imageCmd);
-        return containerCmd.exec().getId();
+        CreateContainerResponse createResponse = containerCmd.exec();
+        
+        try {
+            createResponse.wait();
+            return createResponse.getId();
+        }
+        catch (InterruptedException e) {
+            throw new DockerStartupException("Container creation interrupted.", e);
+        }
     }
     
     /**
@@ -164,9 +173,10 @@ public class DockerStartupClient {
      * @throws DockerStartupException
      *     If an error occurs starting the container.
      */
-    public void startContainer(String cid) throws DockerStartupException {
+    public synchronized void startContainer(String cid)
+            throws DockerStartupException {
         
-        logger.debug(">>>DOCKER<<< Startin container {}", cid);
+        logger.debug(">>>DOCKER<<< Starting container {}", cid);
         
         // Start the container and wait, returning the container ID
         try {

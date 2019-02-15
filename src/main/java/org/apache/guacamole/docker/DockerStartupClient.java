@@ -28,6 +28,7 @@ import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.HostConfig;
 import com.github.dockerjava.api.model.Ports;
+import com.github.dockerjava.api.model.Ports.Binding;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.core.DockerClientConfig;
 import java.io.IOException;
@@ -216,13 +217,19 @@ public class DockerStartupClient {
             String host = config.getDockerHost().getHost();
             logger.debug(">>>DOCKER<<< Container host: {}", host);
             
-            InetAddress hostAddr = InetAddress.getByName(config.getDockerHost().getHost());
-            Ports publishedPorts = client.inspectContainerCmd(containerId)
-                    .exec().getNetworkSettings().getPorts();
-            logger.debug(">>>DOCKER<<< Container ports: {}", publishedPorts.toString());
             Map<String, String> connectionParameters = new HashMap<>();
+            InetAddress hostAddr = InetAddress.getByName(config.getDockerHost().getHost());
+            Map<ExposedPort, Binding[]> portBindings = client
+                    .inspectContainerCmd(containerId).exec()
+                    .getNetworkSettings().getPorts().getBindings();
+            
             connectionParameters.put("hostname", hostAddr.toString());
-            connectionParameters.put("port", publishedPorts.toString());
+            for (ExposedPort port : portBindings.keySet()) {
+                logger.debug(">>>DOCKER<<< Adding port {}", port.toString());
+                connectionParameters.put("port", Integer.toString(port.getPort()));
+                break;
+            }
+
             return connectionParameters;
         }
         catch (UnknownHostException e) {

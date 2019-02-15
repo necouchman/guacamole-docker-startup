@@ -55,9 +55,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private static final Logger logger = LoggerFactory.getLogger(DockerStartupUserContext.class);
     
-    @Inject
-    private ConfigurationService confService;
-    
     private static final String ROOT_IDENTIFIER = "Docker";
     
     /**
@@ -73,18 +70,13 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private final ConnectionGroup rootGroup;
     
-    public DockerStartupUserContext(UserContext userContext)
-            throws GuacamoleException {
+    public DockerStartupUserContext(UserContext userContext,
+            DockerStartupClient dockerClient) throws GuacamoleException {
         
         super(userContext);
         this.authProvider = userContext.getAuthenticationProvider();
         this.connectionDirectory =
                 new DockerStartupConnectionDirectory(super.getConnectionDirectory());
-        
-        logger.debug(">>>DOCKER<<< Docker host is {}", confService.getDockerHost());
-        
-        logger.debug(">>>DOCKER<<< Initializing docker client.");
-        DockerStartupClient dockerClient = new DockerStartupClient(confService.getDockerClientConfig());
         
         logger.debug(">>>DOCKER<<< Building user directory.");
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {

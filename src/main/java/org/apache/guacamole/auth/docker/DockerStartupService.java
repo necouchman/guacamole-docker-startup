@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.ConfigurationService;
 import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
+import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.net.auth.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,8 @@ public class DockerStartupService {
     public UserContext decorate(UserContext userContext)
             throws GuacamoleException {
         
-        logger.debug(">>>DOCKER<<< Setting up decoration with docker host {}", confService.getDockerHost());
-        
-        return new DockerStartupUserContext(userContext);
+        return new DockerStartupUserContext(userContext,
+                new DockerStartupClient(confService.getDockerClientConfig()));
     }
     
 }

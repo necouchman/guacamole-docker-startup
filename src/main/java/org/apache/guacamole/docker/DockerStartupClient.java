@@ -21,7 +21,6 @@ package org.apache.guacamole.docker;
 
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerCmd;
-import com.github.dockerjava.api.command.InspectContainerCmd;
 import com.github.dockerjava.api.command.InspectContainerResponse;
 import com.github.dockerjava.api.command.InspectContainerResponse.ContainerState;
 import com.github.dockerjava.api.exception.NotFoundException;
@@ -265,7 +264,9 @@ public class DockerStartupClient {
             connectionParameters.put("hostname", hostAddr.getHostName());
             for (ExposedPort port : portBindings.keySet()) {
                 Binding[] bindings = portBindings.get(port);
-                if (bindings.length > 0) {
+                if (bindings != null
+                        && bindings.length > 0
+                        && bindings[0] != null) {
                     String hostPort = bindings[0].getHostPortSpec();
                     logger.debug(">>>DOCKER<<< Adding port parameter: {}", hostPort);
                     connectionParameters.put("port", hostPort);

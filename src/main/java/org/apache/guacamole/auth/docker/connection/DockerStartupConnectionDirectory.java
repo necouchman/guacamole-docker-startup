@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.docker.connection;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,22 +56,31 @@ public class DockerStartupConnectionDirectory
     }
     
     @Override
-    public Connection get(String identifier) {
+    public Connection get(String identifier) throws GuacamoleException {
+        if (!connections.containsKey(identifier))
+            return super.get(identifier);
         return connections.get(identifier);
     }
     
     @Override
-    public Collection<Connection> getAll(Collection<String> identifiers) {
+    public Collection<Connection> getAll(Collection<String> identifiers) 
+            throws GuacamoleException {
         Collection<Connection> allConnections = new ArrayList<>();
-        for (String identifier : identifiers)
-            allConnections.add(connections.get(identifier));
+        for (String identifier : identifiers) {
+            if (!connections.containsKey(identifier))
+                allConnections.add(super.get(identifier));
+            else
+                allConnections.add(connections.get(identifier));
+        }
         
         return allConnections;
     }
     
     @Override
-    public Set<String> getIdentifiers() {
-        return connections.keySet();
+    public Set<String> getIdentifiers() throws GuacamoleException {
+        Set<String> allIds = new HashSet<>(super.getIdentifiers());
+        allIds.addAll(connections.keySet());
+        return allIds;
     }
     
     @Override

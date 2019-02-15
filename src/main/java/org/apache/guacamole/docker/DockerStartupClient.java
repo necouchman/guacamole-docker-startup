@@ -223,8 +223,8 @@ public class DockerStartupClient {
                     .inspectContainerCmd(containerId).exec()
                     .getNetworkSettings().getPorts().getBindings();
             
-            logger.debug(">>>DOCKER<<< Adding hostname parameter: {}", hostAddr.toString());
-            connectionParameters.put("hostname", hostAddr.toString());
+            logger.debug(">>>DOCKER<<< Adding hostname parameter: {}", hostAddr.getHostName());
+            connectionParameters.put("hostname", hostAddr.getHostName());
             for (ExposedPort port : portBindings.keySet()) {
                 logger.debug(">>>DOCKER<<< Adding port parameter: {}", port.toString());
                 connectionParameters.put("port", Integer.toString(port.getPort()));

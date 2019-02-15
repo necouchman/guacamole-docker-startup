@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
+import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.EnumField;
 import org.apache.guacamole.form.Form;
@@ -214,6 +215,7 @@ public class DockerStartupConnection extends SimpleConnection {
         // Finish up the config
         super.setIdentifier(this.containerId);
         super.setConfiguration(this.config);
+        super.setParentIdentifier(DockerStartupUserContext.ROOT_IDENTIFIER);
         super.setName(containerName);
         
     }

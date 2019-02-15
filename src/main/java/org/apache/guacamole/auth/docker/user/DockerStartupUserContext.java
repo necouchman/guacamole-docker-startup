@@ -28,7 +28,6 @@ import org.apache.guacamole.auth.docker.connection.DockerStartupConnectionDirect
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
@@ -40,7 +39,6 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.apache.guacamole.net.auth.simple.SimpleConnectionGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +57,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     /**
      * Identifier of the root group for this user context.
      */
-    private static final String ROOT_IDENTIFIER = "Docker";
+    public static final String ROOT_IDENTIFIER = "ROOT";
     
     /**
      * The directory of users associated with this user context.
@@ -75,11 +73,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
      * The connection directory associated with this user context.
      */
     private final Directory<Connection> connectionDirectory;
-    
-    /**
-     * The root connection group.
-     */
-    private final ConnectionGroup rootGroup;
     
     /**
      * Initialize a new DockerStartupUserContext, decorating the provided
@@ -159,9 +152,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
         };
         
-        rootGroup = new SimpleConnectionGroup(ROOT_IDENTIFIER, ROOT_IDENTIFIER,
-                connectionDirectory.getIdentifiers(), Collections.emptyList());
-        
     }
     
     @Override
@@ -186,11 +176,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
         Collection<Form> allAttributes = new HashSet<>(super.getUserGroupAttributes());
         allAttributes.addAll(DockerStartupConnection.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
-    }
-    
-    @Override
-    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        return rootGroup;
     }
     
 }

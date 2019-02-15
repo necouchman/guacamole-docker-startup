@@ -55,26 +55,14 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private static final String ROOT_IDENTIFIER = "Docker";
     
-    /**
-     * The authentication provider associated with this user context.
-     */
-    private final AuthenticationProvider authProvider;
-    
     private final Directory<User> userDirectory;
     
     private final Directory<UserGroup> groupDirectory;
-    
-    // private final Directory<Connection> connectionDirectory;
-    
-    private final ConnectionGroup rootGroup;
     
     public DockerStartupUserContext(UserContext userContext,
             DockerStartupClient dockerClient) throws GuacamoleException {
         
         super(userContext);
-        this.authProvider = userContext.getAuthenticationProvider();
-        // this.connectionDirectory =
-        //        new DockerStartupConnectionDirectory(super.getConnectionDirectory());
         
         logger.debug(">>>DOCKER<<< Building user directory.");
         this.userDirectory = new DecoratingDirectory<User>(super.getUserDirectory()) {
@@ -131,15 +119,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
             
         };
         
-        this.rootGroup = new SimpleConnectionGroup(ROOT_IDENTIFIER,
-                ROOT_IDENTIFIER, super.getConnectionDirectory().getIdentifiers(),
-                Collections.emptyList());
-        
-    }
-    
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
     }
     
     @Override
@@ -150,11 +129,6 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     @Override
     public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
         return groupDirectory;
-    }
-    
-    @Override
-    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-        return rootGroup;
     }
     
     @Override

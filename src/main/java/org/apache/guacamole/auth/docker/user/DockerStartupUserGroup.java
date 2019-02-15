@@ -19,23 +19,11 @@
 
 package org.apache.guacamole.auth.docker.user;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.conf.GuacamoleProtocol;
 import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
 import org.apache.guacamole.docker.DockerStartupClient;
-import org.apache.guacamole.form.EnumField;
-import org.apache.guacamole.form.Form;
-import org.apache.guacamole.form.NumericField;
-import org.apache.guacamole.form.PasswordField;
-import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DelegatingUserGroup;
 import org.apache.guacamole.net.auth.UserGroup;
@@ -45,78 +33,6 @@ import org.apache.guacamole.net.auth.UserGroup;
  * @author nick_couchman
  */
 public class DockerStartupUserGroup extends DelegatingUserGroup {
-    
-    /**
-     * The attribute for a group that specifies the Docker image name that
-     * will be started for a connection.
-     */
-    public static final String DOCKER_IMAGE_NAME_ATTRIBUTE = "docker-image-name";
-    
-    /**
-     * The attribute for a user group that specifies the protocol that will
-     * be used for the connection.
-     */
-    public static final String DOCKER_IMAGE_PROTOCOL_ATTRIBUTE = "docker-image-protocol";
-    
-    /**
-     * The attribute for a user group that specifies the port that the Docker
-     * container is listening on, that will be automatically mapped to an
-     * available port by the Docker host and published.
-     */
-    public static final String DOCKER_IMAGE_PORT_ATTRIBUTE = "docker-image-port";
-    
-    /**
-     * The attribute for a user group that specifies what command, if any,
-     * should be run when the container starts.  If this is null or empty the
-     * container will start with the default command specified within the
-     * image.
-     */
-    public static final String DOCKER_IMAGE_CMD_ATTRIBUTE = "docker-image-cmd";
-    
-    public static final String DOCKER_IMAGE_USER_ATTRIBUTE = "docker-image-user";
-    
-    public static final String DOCKER_IMAGE_PASSWORD_ATTRIBUTE = "docker-image-password";
-    
-    public static final String DOCKER_IMAGE_DOMAIN_ATTRIBUTE = "docker-image-domain";
-    
-    /**
-     * The set of all attributes that are available for this delegating user
-     * group.
-     */
-    public static final List<String> DOCKER_IMAGE_ATTRIBUTES = Arrays.asList(
-            DOCKER_IMAGE_NAME_ATTRIBUTE,
-            DOCKER_IMAGE_PORT_ATTRIBUTE,
-            DOCKER_IMAGE_PROTOCOL_ATTRIBUTE,
-            DOCKER_IMAGE_CMD_ATTRIBUTE,
-            DOCKER_IMAGE_USER_ATTRIBUTE,
-            DOCKER_IMAGE_PASSWORD_ATTRIBUTE,
-            DOCKER_IMAGE_DOMAIN_ATTRIBUTE
-    );
-    
-    /**
-     * The Form that will be used to allow administrators to fill in the
-     * attributes for this delegating user group.
-     */
-    public static final Form DOCKER_IMAGE_FORM = new Form("docker-image",
-            Arrays.asList(
-                    new TextField(DOCKER_IMAGE_NAME_ATTRIBUTE),
-                    new EnumField(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE,
-                            Stream.of(GuacamoleProtocol.values())
-                               .map(GuacamoleProtocol::name)
-                               .collect(Collectors.toList())),
-                    new NumericField(DOCKER_IMAGE_PORT_ATTRIBUTE),
-                    new TextField(DOCKER_IMAGE_CMD_ATTRIBUTE),
-                    new TextField(DOCKER_IMAGE_USER_ATTRIBUTE),
-                    new PasswordField(DOCKER_IMAGE_PASSWORD_ATTRIBUTE),
-                    new TextField(DOCKER_IMAGE_DOMAIN_ATTRIBUTE)
-            ));
-    
-    /**
-     * The collection of all forms that will be available for this delegating
-     * user group.
-     */
-    public static final Collection<Form> ATTRIBUTES = 
-            Collections.unmodifiableCollection(Arrays.asList(DOCKER_IMAGE_FORM));
     
     /**
      * The attributes of this delegating user group.
@@ -170,7 +86,7 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
         Map<String, String> effectiveAttributes = new HashMap<>(attributes);
         
         // Add in missing attributes or filter out if the user does not have rights
-        for (String attr : DOCKER_IMAGE_ATTRIBUTES) {
+        for (String attr : DockerStartupConnection.DOCKER_IMAGE_ATTRIBUTES) {
             if (canUpdate && !effectiveAttributes.containsKey(attr))
                 effectiveAttributes.put(attr, null);
             else if (!canUpdate && effectiveAttributes.containsKey(attr))
@@ -188,7 +104,7 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
         
         // If no rights, remove the decorating attributes
         if (!canUpdate)
-            for (String attr : DOCKER_IMAGE_ATTRIBUTES)
+            for (String attr : DockerStartupConnection.DOCKER_IMAGE_ATTRIBUTES)
                 setAttributes.remove(attr);
         
         super.setAttributes(setAttributes);
@@ -196,9 +112,9 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
     }
     
     public Boolean hasDockerConnection() {
-        return (attributes.containsKey(DOCKER_IMAGE_NAME_ATTRIBUTE)
-                && attributes.containsKey(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)
-                && attributes.containsKey(DOCKER_IMAGE_PORT_ATTRIBUTE));
+        return (attributes.containsKey(DockerStartupConnection.DOCKER_IMAGE_NAME_ATTRIBUTE)
+                && attributes.containsKey(DockerStartupConnection.DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)
+                && attributes.containsKey(DockerStartupConnection.DOCKER_IMAGE_PORT_ATTRIBUTE));
     }
     
     public Connection getDockerConnection(DockerStartupClient dockerClient)
@@ -207,12 +123,14 @@ public class DockerStartupUserGroup extends DelegatingUserGroup {
         if (!hasDockerConnection())
             return null;
         
-        return new DockerStartupConnection(dockerClient,
-                attributes.get(DOCKER_IMAGE_NAME_ATTRIBUTE),
-                Integer.parseInt(attributes.get(DOCKER_IMAGE_PORT_ATTRIBUTE)),
-                this.getIdentifier(),
-                attributes.get(DOCKER_IMAGE_CMD_ATTRIBUTE),
-                GuacamoleProtocol.valueOf(attributes.get(DOCKER_IMAGE_PROTOCOL_ATTRIBUTE)));
+        Map<String, String> connectionAttrs = new HashMap<>();
+        for (String attr : DockerStartupConnection.DOCKER_IMAGE_ATTRIBUTES) {
+            if (attributes.containsKey(attr))
+                connectionAttrs.put(attr, attributes.get(attr));
+        }
+        
+        return new DockerStartupConnection(dockerClient, this.getIdentifier(),
+                connectionAttrs);
     }
     
 }

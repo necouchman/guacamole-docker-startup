@@ -33,11 +33,30 @@ import org.slf4j.LoggerFactory;
  */
 public class DockerStartupService {
     
+    /**
+     * The logger for this class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(DockerStartupService.class);
     
+    /**
+     * The configuration service that handles guacamole.properties entries
+     * for this extension.
+     */
     @Inject
     private ConfigurationService confService;
     
+    /**
+     * Decorate the given user context, returning the decorated user context.
+     * 
+     * @param userContext
+     *     The original user context to decorate.
+     * 
+     * @return
+     *     The decorated user context.
+     * 
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
     public UserContext decorate(UserContext userContext)
             throws GuacamoleException {
         

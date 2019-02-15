@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.docker.connection.DockerStartupConnection;
 import org.apache.guacamole.docker.DockerStartupClient;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
@@ -46,12 +47,24 @@ import org.slf4j.LoggerFactory;
  */
 public class DockerStartupUserContext extends DelegatingUserContext {
     
+    /**
+     * Logger for this class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(DockerStartupUserContext.class);
     
+    /**
+     * Identifier of the root group for this user context.
+     */
     private static final String ROOT_IDENTIFIER = "Docker";
     
+    /**
+     * The directory of users associated with this user context.
+     */
     private final Directory<User> userDirectory;
     
+    /**
+     * The directory of user groups associated with this user context.
+     */
     private final Directory<UserGroup> groupDirectory;
     
     public DockerStartupUserContext(UserContext userContext,
@@ -129,14 +142,14 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> allAttributes = new HashSet<>(super.getUserAttributes());
-        allAttributes.addAll(DockerStartupUser.ATTRIBUTES);
+        allAttributes.addAll(DockerStartupConnection.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }
     
     @Override
     public Collection<Form> getUserGroupAttributes() {
         Collection<Form> allAttributes = new HashSet<>(super.getUserGroupAttributes());
-        allAttributes.addAll(DockerStartupUserGroup.ATTRIBUTES);
+        allAttributes.addAll(DockerStartupConnection.ATTRIBUTES);
         return Collections.unmodifiableCollection(allAttributes);
     }
     

@@ -46,6 +46,9 @@ import org.slf4j.LoggerFactory;
  */
 public class DockerStartupClient {
     
+    /**
+     * The logger for this class.
+     */
     private final static Logger logger = LoggerFactory.getLogger(DockerStartupClient.class);
     
     /**
@@ -153,6 +156,15 @@ public class DockerStartupClient {
         return containerCmd.exec().getId();
     }
     
+    /**
+     * Star the container with the specified container identifier or name.
+     * 
+     * @param cid
+     *     The identifier or name of the container to start.
+     * 
+     * @throws DockerStartupException
+     *     If an error occurs starting the container.
+     */
     public void startContainer(String cid) throws DockerStartupException {
         
         logger.debug(">>>DOCKER<<< Startin container {}", cid);
@@ -171,6 +183,19 @@ public class DockerStartupClient {
         
     }
     
+    /**
+     * Check wither the container exists, return true if it exists or false
+     * if not.
+     * 
+     * @param cid
+     *     The identifier or name of the container to check for existence.
+     * 
+     * @return
+     *     True if the container exists, otherwise false.
+     * 
+     * @throws DockerStartupException
+     *     If an error occurs get the Docker Client information.
+     */
     public Boolean containerExists(String cid) throws DockerStartupException {
         logger.debug(">>>DOCKER<<< Checking if container {} exists.", cid);
         try {
@@ -183,6 +208,19 @@ public class DockerStartupClient {
         }
     }
     
+    /**
+     * Check and see if the specified container is running, returning true
+     * if the container exists and is running, otherwise false.
+     * 
+     * @param cid
+     *     The identifier or name of the container.
+     * 
+     * @return
+     *     True if the container exists and is running, otherwise false.
+     * 
+     * @throws DockerStartupException 
+     *     If the Docker client cannot be retrieved.
+     */
     public Boolean containerRunning(String cid) throws DockerStartupException {
         logger.debug(">>>DOCKER<<< Checking if container {} is running", cid);
         if (!containerExists(cid))
@@ -277,8 +315,10 @@ public class DockerStartupClient {
     @Override
     public void finalize() throws Throwable {
         try {
+            // Close the Docker client.
             client.close();
         }
+        // Ignore any exceptions.
         catch (IOException e) {}
         
         super.finalize();

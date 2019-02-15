@@ -153,15 +153,7 @@ public class DockerStartupClient {
                 .withHostConfig(hostConfig);
         if (imageCmd != null && !imageCmd.isEmpty())
             containerCmd.withCmd(imageCmd);
-        CreateContainerResponse createResponse = containerCmd.exec();
-        
-        try {
-            createResponse.wait();
-            return createResponse.getId();
-        }
-        catch (InterruptedException e) {
-            throw new DockerStartupException("Container creation interrupted.", e);
-        }
+        return containerCmd.exec().getId();
     }
     
     /**

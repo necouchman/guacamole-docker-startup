@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.docker.user;
 
+import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -54,6 +55,9 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private static final Logger logger = LoggerFactory.getLogger(DockerStartupUserContext.class);
     
+    @Inject
+    private ConfigurationService confService;
+    
     private static final String ROOT_IDENTIFIER = "Docker";
     
     /**
@@ -69,8 +73,7 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     
     private final ConnectionGroup rootGroup;
     
-    public DockerStartupUserContext(UserContext userContext,
-            ConfigurationService confService)
+    public DockerStartupUserContext(UserContext userContext)
             throws GuacamoleException {
         
         super(userContext);

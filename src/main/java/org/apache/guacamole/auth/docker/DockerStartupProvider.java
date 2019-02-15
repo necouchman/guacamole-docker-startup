@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.docker;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.docker.conf.ConfigurationService;
-import org.apache.guacamole.auth.docker.user.DockerStartupUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
@@ -62,16 +60,22 @@ public class DockerStartupProvider extends AbstractAuthenticationProvider {
     public UserContext decorate(UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return new DockerStartupUserContext(context,
-                injector.getInstance(ConfigurationService.class));
+        
+        DockerStartupService startupService = injector.getInstance(DockerStartupService.class);
+        
+        return startupService.decorate(context);
+
     }
     
     @Override
     public UserContext redecorate(UserContext decorated, UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return new DockerStartupUserContext(context,
-                injector.getInstance(ConfigurationService.class));
+
+        DockerStartupService startupService = injector.getInstance(DockerStartupService.class);
+        
+        return startupService.decorate(context);
+        
     }
     
 }

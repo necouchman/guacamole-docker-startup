@@ -165,6 +165,11 @@ public class DockerStartupUserContext extends DelegatingUserContext {
     }
     
     @Override
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+        return connectionDirectory;
+    }
+    
+    @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> allAttributes = new HashSet<>(super.getUserAttributes());
         allAttributes.addAll(DockerStartupConnection.ATTRIBUTES);

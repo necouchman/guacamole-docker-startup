@@ -141,7 +141,7 @@ public class DockerStartupClient {
         portBindings.bind(containerPort, Ports.Binding.bindPortSpec(null));
         HostConfig hostConfig = new HostConfig()
                 .withPortBindings(portBindings)
-                .withPublishAllPorts(true);
+                .withPublishAllPorts(false);
         
         // Create the command to start the container
         CreateContainerCmd containerCmd = client.createContainerCmd(imageName)
